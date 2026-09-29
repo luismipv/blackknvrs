@@ -1,0 +1,321 @@
+{
+  "band": {
+    "name": "Black KNVRS",
+    "genre": "Alternative Rock / Pop Rock",
+    "management": "Luis Miguel Pérez Vega & Pavel Guerra",
+    "activeEra": "Era 1 - Debut EP Waterfall",
+    "theme": {
+      "bgPrimary": "#060609",
+      "bgCard": "#0F0F16",
+      "accentChrome": "#E5E5EB",
+      "border": "rgba(255, 255, 255, 0.12)"
+    }
+  },
+  "members": [
+    {
+      "id": "pia",
+      "name": "Valeria / Pía",
+      "role": "Cantante / Compositora",
+      "color": "#FF3385",
+      "pin": "1001",
+      "avatar": "images/pia.png",
+      "operationalRole": "Voz principal, composición lírica, vocería oficial en medios y curaduría de fotos semestrales."
+    },
+    {
+      "id": "adri",
+      "name": "Adrianne (Adri)",
+      "role": "Bajista / Compositora",
+      "color": "#FF2A55",
+      "pin": "1002",
+      "avatar": "images/adri.png",
+      "operationalRole": "Líneas de bajo, groove melódico, co-composición y propuesta visual de estilismo."
+    },
+    {
+      "id": "maff",
+      "name": "Maff",
+      "role": "Baterista / Compositora",
+      "color": "#9D4EDD",
+      "pin": "1004",
+      "avatar": "images/maff.png",
+      "operationalRole": "Dirección rítmica de batería, co-composición, redacción de copies y administración de 'La Caja'."
+    },
+    {
+      "id": "dani",
+      "name": "Dani",
+      "role": "Guitarrista / Arreglista",
+      "color": "#00E676",
+      "pin": "1005",
+      "avatar": "images/dani.png",
+      "operationalRole": "Guitarras líderes, arreglos armónicos y supervisión de backline técnico."
+    },
+    {
+      "id": "kar",
+      "name": "Kar",
+      "role": "Guitarrista / Arreglista",
+      "color": "#0070F3",
+      "pin": "1003",
+      "avatar": "images/kar.png",
+      "operationalRole": "Guitarras rítmicas, arreglos armónicos, disciplina de ensayos y prospección de foros CDMX con Stef."
+    }
+  ],
+  "singles": [
+    {
+      "id": "s1",
+      "title": "I LIKE 2 BE",
+      "type": "Viral Kickoff (Bruses Cover - Redes Sociales)",
+      "status": "Ready for Social Push",
+      "releaseDate": "2026-10-23",
+      "pitchDeadline": null,
+      "waterfallTrackNumber": null,
+      "audioFile": "audio/I LIKE 2 BE.mp3",
+      "versions": [
+        { "name": "Video Edit / Social Audio", "file": "audio/I LIKE 2 BE.mp3", "lufs": -14.1, "isPrimary": true }
+      ],
+      "assets": {
+        "driveUrl": "https://drive.google.com/drive/folders/blackknvrs-ilike2be",
+        "hasCoverArt": true,
+        "hasMusicVideo": true,
+        "videoFile": "videos/video-web.mp4",
+        "masterVideoFile": "videos/BK2.mov",
+        "hasStems": true
+      },
+      "deliverablesSummary": "Estreno oficial en YouTube y redes el 23 de Octubre en sincronía con el concierto en vivo."
+    },
+    {
+      "id": "s2",
+      "title": "Electricidad",
+      "type": "Single Debut Oficial 01 (Inédito - DSPs)",
+      "status": "Pre-production / Video Prep",
+      "releaseDate": "2027-01-22",
+      "pitchDeadline": "2026-12-28",
+      "waterfallTrackNumber": 1,
+      "audioFile": "audio/CFE.mp3",
+      "versions": [
+        { "name": "Mix Final v2", "file": "audio/CFE.mp3", "lufs": -14.3, "isPrimary": true }
+      ],
+      "assets": {
+        "driveUrl": "https://drive.google.com/drive/folders/blackknvrs-electricidad",
+        "hasCoverArt": true,
+        "hasMusicVideo": false,
+        "hasStems": true
+      },
+      "deliverablesSummary": "Single Debut en DSPs + Video Oficial. Rodaje: 7-11 Nov en Break Room / Paneles LED. Target: Bruses."
+    },
+    {
+      "id": "s3",
+      "title": "Un Aplauso Para Ti",
+      "type": "Single 02 (Inédito - DSPs)",
+      "status": "Asset Audit & Curaduria",
+      "releaseDate": "2027-03-05",
+      "pitchDeadline": "2027-02-12",
+      "waterfallTrackNumber": 2,
+      "audioFile": "audio/Un Aplauso Para Ti.mp3",
+      "versions": [
+        { "name": "Master v1", "file": "audio/Un Aplauso Para Ti.mp3", "lufs": -14.0, "isPrimary": true }
+      ],
+      "assets": {
+        "driveUrl": "https://drive.google.com/drive/folders/blackknvrs-unaplausoparati",
+        "hasCoverArt": false,
+        "hasMusicVideo": false,
+        "hasStems": true
+      },
+      "deliverablesSummary": "Master sonoro listo. Ventana de curaduría gráfica: 25 Ene - 12 Feb 2027."
+    },
+    {
+      "id": "s4",
+      "title": "Si Fuera Yo",
+      "type": "Single 03 / Debut EP (Inédito - DSPs)",
+      "status": "Asset Audit & Curaduria",
+      "releaseDate": "2027-04-23",
+      "pitchDeadline": "2027-03-26",
+      "waterfallTrackNumber": 3,
+      "audioFile": "audio/Si Fuera Yo.mp3",
+      "versions": [
+        { "name": "Master v1", "file": "audio/Si Fuera Yo.mp3", "lufs": -13.8, "isPrimary": true }
+      ],
+      "assets": {
+        "driveUrl": "https://drive.google.com/drive/folders/blackknvrs-sifuerayo",
+        "hasCoverArt": false,
+        "hasMusicVideo": false,
+        "hasStems": true
+      },
+      "deliverablesSummary": "Focus track del EP consolidado. Ventana de curaduría: 08-26 Marzo 2027."
+    },
+    {
+      "id": "s5",
+      "title": "Canción de Adri",
+      "type": "Songwriting Workshop #1",
+      "status": "Demo En Progreso",
+      "releaseDate": "TBD (EP 2)",
+      "pitchDeadline": null,
+      "waterfallTrackNumber": null,
+      "audioFile": "audio/Cancion de Adri.mp3",
+      "versions": [
+        { "name": "Maqueta Estudio Adri", "file": "audio/Cancion de Adri.mp3", "lufs": -15.5, "isPrimary": true }
+      ],
+      "assets": {
+        "driveUrl": "https://drive.google.com/drive/folders/blackknvrs-demos",
+        "hasCoverArt": false,
+        "hasMusicVideo": false,
+        "hasStems": false
+      },
+      "deliverablesSummary": "Sesión de estudio de fin de semana para bases punk con Kar y Pillo (posterior al show de octubre). Firma de split sheet."
+    },
+    {
+      "id": "s6",
+      "title": "Aunque Todo Esté Mal",
+      "type": "Songwriting Workshop #2",
+      "status": "Demo En Progreso",
+      "releaseDate": "TBD (EP 2)",
+      "pitchDeadline": null,
+      "waterfallTrackNumber": null,
+      "audioFile": "audio/Aunque todo este mal.m4a",
+      "versions": [
+        { "name": "Maqueta M4A Directa", "file": "audio/Aunque todo este mal.m4a", "lufs": -16.0, "isPrimary": true }
+      ],
+      "assets": {
+        "driveUrl": "https://drive.google.com/drive/folders/blackknvrs-demos",
+        "hasCoverArt": false,
+        "hasMusicVideo": false,
+        "hasStems": false
+      },
+      "deliverablesSummary": "Sesiones mensuales de fin de semana en CDMX o Puebla."
+    },
+    {
+      "id": "s7",
+      "title": "Canción de Kar",
+      "type": "Songwriting Workshop #3",
+      "status": "Demo En Progreso",
+      "releaseDate": "TBD (EP 2)",
+      "pitchDeadline": null,
+      "waterfallTrackNumber": null,
+      "audioFile": "audio/Cancion de Kar.mp3",
+      "versions": [
+        { "name": "Maqueta Estudio Kar", "file": "audio/Cancion de Kar.mp3", "lufs": -15.0, "isPrimary": true }
+      ],
+      "assets": {
+        "driveUrl": "https://drive.google.com/drive/folders/blackknvrs-demos",
+        "hasCoverArt": false,
+        "hasMusicVideo": false,
+        "hasStems": false
+      },
+      "deliverablesSummary": "Adaptación a estilo punk en fin de semana de estudio en CDMX/Puebla."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "t1",
+      "title": "Sesión de fotos oficial del grupo (Pavel Guerra)",
+      "assignedTo": "Management",
+      "dueDate": "2026-10-01",
+      "priority": "Crítica",
+      "status": "Scheduled",
+      "category": "Visual"
+    },
+    {
+      "id": "t2",
+      "title": "Publicación de foto grupal e inicio de posts colaborativos cada 2 días",
+      "assignedTo": "All",
+      "dueDate": "2026-10-01",
+      "priority": "Alta",
+      "status": "Scheduled",
+      "category": "Redes"
+    },
+    {
+      "id": "t3",
+      "title": "Anuncio oficial en redes del Concierto del 23 de Octubre (CV Hype)",
+      "assignedTo": "All",
+      "dueDate": "2026-10-05",
+      "priority": "Alta",
+      "status": "Pending",
+      "category": "Show"
+    },
+    {
+      "id": "t4",
+      "title": "Reunión de preproducción videoclip: Break Room vs Escape Room (Jueves 08 Oct)",
+      "assignedTo": "All",
+      "dueDate": "2026-10-08",
+      "priority": "Alta",
+      "status": "Scheduled",
+      "category": "Videoclip"
+    },
+    {
+      "id": "t5",
+      "title": "Activación de canales TikTok y YouTube con nuevo correo de contacto",
+      "assignedTo": "Management",
+      "dueDate": "2026-10-12",
+      "priority": "Alta",
+      "status": "Pending",
+      "category": "Digital"
+    },
+    {
+      "id": "t6",
+      "title": "Publicar video de la grabación de 'I LIKE 2 BE'",
+      "assignedTo": "All",
+      "dueDate": "2026-10-20",
+      "priority": "Alta",
+      "status": "Pending",
+      "category": "Contenido"
+    },
+    {
+      "id": "t7",
+      "title": "Publicar teaser oficial de 'I LIKE 2 BE'",
+      "assignedTo": "All",
+      "dueDate": "2026-10-21",
+      "priority": "Alta",
+      "status": "Pending",
+      "category": "Contenido"
+    },
+    {
+      "id": "t8",
+      "title": "CONCIERTO EN VIVO + Estreno oficial de 'I LIKE 2 BE' (YouTube)",
+      "assignedTo": "All",
+      "dueDate": "2026-10-23",
+      "priority": "Crítica",
+      "status": "Scheduled",
+      "category": "Show"
+    },
+    {
+      "id": "t9",
+      "title": "Grabación de videoclip oficial 'Electricidad' (Break Room / Set LED)",
+      "assignedTo": "All",
+      "dueDate": "2026-11-07",
+      "priority": "Crítica",
+      "status": "Scheduled",
+      "category": "Producción"
+    },
+    {
+      "id": "t10",
+      "title": "Secret Listening Session & Focus Group Presencial (10-15 morras)",
+      "assignedTo": "All",
+      "dueDate": "2026-12-05",
+      "priority": "Alta",
+      "status": "Scheduled",
+      "category": "Investigación"
+    },
+    {
+      "id": "t11",
+      "title": "Revisión y firma del Convenio de Colaboración (6 meses)",
+      "assignedTo": "All",
+      "dueDate": "2026-10-10",
+      "priority": "Crítica",
+      "status": "In Progress",
+      "category": "Legal"
+    }
+  ],
+  "legal": {
+    "agreementDocument": "docs/convenio.pdf",
+    "contractTitle": "Convenio de Colaboración y Código de Trabajo Artístico (Vigencia 6 meses)",
+    "parties": "Luis Miguel Pérez Vega & Pavel Guerra (Productores) y Valeria/Pía, Kar, Adrianne, Maff, Dani (Artistas)",
+    "durationMonths": 6,
+    "kpiGoals": "Alcanzar 1,000 oyentes mensuales y realizar 1 show exclusivo con 40 boletos de pago",
+    "punctualityRule": "Retardos no justificados mayores a 5 minutos = $50 MXN a 'La Caja'",
+    "masterShare": { "producers": 50, "artists": 50 },
+    "youtubeRoyalties": { "producers": 50, "artists": 50 },
+    "compositionShare": { "authors": 100, "description": "100% Autoras (INDAUTOR / SACM) con Split Sheet firmado desde inicio de sesión" },
+    "syncShare": { "producers": 50, "artists": 50 },
+    "liveBookingFee": "20% Comisión sobre utilidad neta de shows gestionados por Productores (80% Artistas)",
+    "socialMediaGuidelines": "Cuentas personales separadas, opción sufijo _black, alineación con patrocinios (ej. Bacardí)",
+    "brandProtection": "Black KNVRS validado fonéticamente sin conflicto con sector textil"
+  }
+}
