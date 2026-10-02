@@ -13,49 +13,70 @@
   },
   "members": [
     {
+      "id": "luis",
+      "name": "Luis Miguel",
+      "fullName": "Luis Miguel Pérez Vega",
+      "role": "Manager / Productor",
+      "color": "#E5E5EB",
+      "pin": "2026",
+      "avatar": "images/logo.png",
+      "operationalRole": "Dirección operativa general, producción musical, asignación de tareas, seguimiento de entregas y estrategia CDMX.",
+      "isAdmin": true
+    },
+    {
       "id": "pia",
       "name": "Valeria / Pía",
+      "fullName": "Valeria (Pía)",
       "role": "Cantante / Compositora",
       "color": "#FF3385",
       "pin": "1001",
       "avatar": "images/pia.png",
-      "operationalRole": "Voz principal, composición lírica, vocería oficial en medios y curaduría de fotos semestrales."
+      "operationalRole": "Voz principal, composición lírica, vocería oficial en medios y curaduría de fotos semestrales.",
+      "isAdmin": false
     },
     {
       "id": "adri",
       "name": "Adrianne (Adri)",
+      "fullName": "Adrianne",
       "role": "Bajista / Compositora",
       "color": "#FF2A55",
       "pin": "1002",
       "avatar": "images/adri.png",
-      "operationalRole": "Líneas de bajo, groove melódico, co-composición y propuesta visual de estilismo."
-    },
-    {
-      "id": "maff",
-      "name": "Maff",
-      "role": "Baterista / Compositora",
-      "color": "#9D4EDD",
-      "pin": "1004",
-      "avatar": "images/maff.png",
-      "operationalRole": "Dirección rítmica de batería, co-composición, redacción de copies y administración de 'La Caja'."
-    },
-    {
-      "id": "dani",
-      "name": "Dani",
-      "role": "Guitarrista / Arreglista",
-      "color": "#00E676",
-      "pin": "1005",
-      "avatar": "images/dani.png",
-      "operationalRole": "Guitarras líderes, arreglos armónicos y supervisión de backline técnico."
+      "operationalRole": "Líneas de bajo, groove melódico, co-composición y propuesta visual de estilismo.",
+      "isAdmin": false
     },
     {
       "id": "kar",
       "name": "Kar",
+      "fullName": "Kar",
       "role": "Guitarrista / Arreglista",
       "color": "#0070F3",
       "pin": "1003",
       "avatar": "images/kar.png",
-      "operationalRole": "Guitarras rítmicas, arreglos armónicos, disciplina de ensayos y prospección de foros CDMX con Stef."
+      "operationalRole": "Guitarras rítmicas, arreglos armónicos, disciplina de ensayos y prospección de foros CDMX con Stef.",
+      "isAdmin": false
+    },
+    {
+      "id": "maff",
+      "name": "Maff",
+      "fullName": "Maff",
+      "role": "Baterista / Compositora",
+      "color": "#9D4EDD",
+      "pin": "1004",
+      "avatar": "images/maff.png",
+      "operationalRole": "Dirección rítmica de batería, co-composición, redacción de copies y administración de 'La Caja'.",
+      "isAdmin": false
+    },
+    {
+      "id": "dani",
+      "name": "Dani",
+      "fullName": "Dani",
+      "role": "Guitarrista / Arreglista",
+      "color": "#00E676",
+      "pin": "1005",
+      "avatar": "images/dani.png",
+      "operationalRole": "Guitarras líderes, arreglos armónicos y supervisión de backline técnico.",
+      "isAdmin": false
     }
   ],
   "singles": [
@@ -76,7 +97,6 @@
         "hasCoverArt": true,
         "hasMusicVideo": true,
         "videoFile": "videos/video-web.mp4",
-        "masterVideoFile": "videos/BK2.mov",
         "hasStems": true
       },
       "deliverablesSummary": "Estreno oficial en YouTube y redes el 23 de Octubre en sincronía con el concierto en vivo."
@@ -159,7 +179,7 @@
         "hasMusicVideo": false,
         "hasStems": false
       },
-      "deliverablesSummary": "Sesión de estudio de fin de semana para bases punk con Kar y Pillo (posterior al show de octubre). Firma de split sheet."
+      "deliverablesSummary": "Sesión de estudio para bases punk con Kar y Pillo (posterior al show de octubre). Firma de split sheet."
     },
     {
       "id": "s6",
@@ -206,101 +226,165 @@
     {
       "id": "t1",
       "title": "Sesión de fotos oficial del grupo (Pavel Guerra)",
-      "assignedTo": "Management",
+      "description": "Coordinación de llamado en estudio con Pavel Guerra para fotos oficiales de prensa y portadas.",
+      "assignedTo": "all",
       "dueDate": "2026-10-01",
       "priority": "Crítica",
-      "status": "Scheduled",
-      "category": "Visual"
+      "status": "Completada",
+      "category": "Visual",
+      "assignedBy": "Luis Miguel"
     },
     {
       "id": "t2",
-      "title": "Publicación de foto grupal e inicio de posts colaborativos cada 2 días",
-      "assignedTo": "All",
-      "dueDate": "2026-10-01",
+      "title": "Publicación de foto grupal e inicio de posts colaborativos",
+      "description": "Publicar en IG la foto oficial de alineación y activar posts individuales colaborativos cada 2 días.",
+      "assignedTo": "all",
+      "dueDate": "2026-10-02",
       "priority": "Alta",
-      "status": "Scheduled",
-      "category": "Redes"
+      "status": "Pendiente",
+      "category": "Redes",
+      "assignedBy": "Luis Miguel"
     },
     {
       "id": "t3",
-      "title": "Anuncio oficial en redes del Concierto del 23 de Octubre (CV Hype)",
-      "assignedTo": "All",
-      "dueDate": "2026-10-05",
+      "title": "Grabación de 2 videos cortos cantando 'I LIKE 2 BE'",
+      "description": "2 videos verticales estilo TikTok/Reels mostrando la voz de Pía sobre la pista para campaña de expectativa.",
+      "assignedTo": "pia",
+      "dueDate": "2026-10-12",
       "priority": "Alta",
-      "status": "Pending",
-      "category": "Show"
+      "status": "Pendiente",
+      "category": "Redes",
+      "assignedBy": "Luis Miguel"
     },
     {
       "id": "t4",
-      "title": "Reunión de preproducción videoclip: Break Room vs Escape Room (Jueves 08 Oct)",
-      "assignedTo": "All",
-      "dueDate": "2026-10-08",
+      "title": "Aprobación de Guión y Tratamiento de 'Electricidad'",
+      "description": "Revisar la propuesta estética, paleta de colores y vestuario para el rodaje del set LED.",
+      "assignedTo": "adri",
+      "dueDate": "2026-10-16",
       "priority": "Alta",
-      "status": "Scheduled",
-      "category": "Videoclip"
+      "status": "Pendiente",
+      "category": "Videoclip",
+      "assignedBy": "Luis Miguel"
     },
     {
       "id": "t5",
-      "title": "Activación de canales TikTok y YouTube con nuevo correo de contacto",
-      "assignedTo": "Management",
-      "dueDate": "2026-10-12",
-      "priority": "Alta",
-      "status": "Pending",
-      "category": "Digital"
+      "title": "Scouting y contacto con foros indie en CDMX",
+      "description": "Prospectar opciones de foros (Bajo Circuito, Multiforo 246, etc.) con aforo de 80-150 personas.",
+      "assignedTo": "kar",
+      "dueDate": "2026-10-25",
+      "priority": "Media",
+      "status": "Pendiente",
+      "category": "Show",
+      "assignedBy": "Luis Miguel"
     },
     {
       "id": "t6",
-      "title": "Publicar video de la grabación de 'I LIKE 2 BE'",
-      "assignedTo": "All",
-      "dueDate": "2026-10-20",
+      "title": "Supervisión de backline técnico y afinaciones",
+      "description": "Checklist de amplificadores de guitarra, pedaleras, afinadores y cables de repuesto para el show.",
+      "assignedTo": "dani",
+      "dueDate": "2026-10-18",
       "priority": "Alta",
-      "status": "Pending",
-      "category": "Contenido"
+      "status": "Pendiente",
+      "category": "Producción",
+      "assignedBy": "Luis Miguel"
     },
     {
       "id": "t7",
-      "title": "Publicar teaser oficial de 'I LIKE 2 BE'",
-      "assignedTo": "All",
-      "dueDate": "2026-10-21",
-      "priority": "Alta",
-      "status": "Pending",
-      "category": "Contenido"
+      "title": "Balance y reporte de aportaciones a 'La Caja'",
+      "description": "Corte de caja de impuntualidades de septiembre y compra de baquetas / insumos de ensayo.",
+      "assignedTo": "maff",
+      "dueDate": "2026-10-31",
+      "priority": "Baja",
+      "status": "En Proceso",
+      "category": "Administración",
+      "assignedBy": "Luis Miguel"
     },
     {
       "id": "t8",
-      "title": "CONCIERTO EN VIVO + Estreno oficial de 'I LIKE 2 BE' (YouTube)",
-      "assignedTo": "All",
+      "title": "CONCIERTO EN VIVO + Estreno oficial de 'I LIKE 2 BE'",
+      "description": "Llegada al foro 16:00 soundcheck. Estreno simultáneo del videoclip en YouTube al iniciar el show.",
+      "assignedTo": "all",
       "dueDate": "2026-10-23",
       "priority": "Crítica",
-      "status": "Scheduled",
-      "category": "Show"
+      "status": "Pendiente",
+      "category": "Show",
+      "assignedBy": "Luis Miguel"
     },
     {
       "id": "t9",
-      "title": "Grabación de videoclip oficial 'Electricidad' (Break Room / Set LED)",
-      "assignedTo": "All",
+      "title": "Grabación de videoclip oficial 'Electricidad' (Break Room)",
+      "description": "Call time 08:00 hrs. Rodaje completo de secuencias de furia y set LED.",
+      "assignedTo": "all",
       "dueDate": "2026-11-07",
       "priority": "Crítica",
-      "status": "Scheduled",
-      "category": "Producción"
+      "status": "Pendiente",
+      "category": "Videoclip",
+      "assignedBy": "Luis Miguel"
+    }
+  ],
+  "songIdeas": [
+    {
+      "id": "idea-1",
+      "title": "Canción de Adri (Demo Punk)",
+      "authorId": "adri",
+      "authorName": "Adri",
+      "date": "2026-09-28",
+      "audioUrl": "audio/Cancion de Adri.mp3",
+      "driveUrl": "https://drive.google.com/drive/folders/blackknvrs-demos",
+      "status": "En Desarrollo",
+      "key": "D menor",
+      "bpm": "165 BPM",
+      "lyrics": "Verso 1:\nLuces rotas en el pasillo,\nno me digas que me quede aquí.\nYa perdimos todo el brillo,\npero sigo esperando por ti.\n\nCoro:\nSi salimos a correr,\nnada nos va a detener.\nRompe todo alrededor,\neste es nuestro propio error.",
+      "notes": "Línea de bajo con overdrive al inicio. Kar entra con quintas rápidas en el compás 8.",
+      "comments": [
+        {
+          "authorName": "Luis Miguel",
+          "text": "El riff de bajo tiene mucha pegada. En el ensayo del martes pulimos el puente.",
+          "date": "2026-09-29"
+        },
+        {
+          "authorName": "Pía",
+          "text": "Tengo lista la melodía del coro en octava alta, queda muy enérgica.",
+          "date": "2026-09-30"
+        }
+      ]
     },
     {
-      "id": "t10",
-      "title": "Secret Listening Session & Focus Group Presencial (10-15 morras)",
-      "assignedTo": "All",
-      "dueDate": "2026-12-05",
-      "priority": "Alta",
-      "status": "Scheduled",
-      "category": "Investigación"
+      "id": "idea-2",
+      "title": "Aunque Todo Esté Mal",
+      "authorId": "pia",
+      "authorName": "Pía",
+      "date": "2026-09-25",
+      "audioUrl": "audio/Aunque todo este mal.m4a",
+      "driveUrl": "",
+      "status": "Boceto Acústico",
+      "key": "A mayor",
+      "bpm": "128 BPM",
+      "lyrics": "Verso:\nTodo se siente pesado hoy,\npero si estás conmigo sé a dónde voy.\nQue digan lo que quieran de nosotras,\nnos vemos al final en las derrotas.",
+      "notes": "Grabada acústica. Queremos armar la versión rock con batería potente en el coro.",
+      "comments": [
+        {
+          "authorName": "Kar",
+          "text": "Podemos meter unos arpegios abiertos con chorus antes de la explosión.",
+          "date": "2026-09-26"
+        }
+      ]
     },
     {
-      "id": "t11",
-      "title": "Revisión y firma del Convenio de Colaboración (6 meses)",
-      "assignedTo": "All",
-      "dueDate": "2026-10-10",
-      "priority": "Crítica",
-      "status": "In Progress",
-      "category": "Legal"
+      "id": "idea-3",
+      "title": "Canción de Kar (Riff Explosivo)",
+      "authorId": "kar",
+      "authorName": "Kar",
+      "date": "2026-09-27",
+      "audioUrl": "audio/Cancion de Kar.mp3",
+      "driveUrl": "",
+      "status": "Para Ensayo",
+      "key": "E menor",
+      "bpm": "172 BPM",
+      "lyrics": "(Instrumental / En proceso lírico)",
+      "notes": "Riff con mucha dinámica punk rock. Maff checa los acentos de bombo y contratiempos.",
+      "comments": []
     }
   ],
   "legal": {
@@ -315,7 +399,7 @@
     "compositionShare": { "authors": 100, "description": "100% Autoras (INDAUTOR / SACM) con Split Sheet firmado desde inicio de sesión" },
     "syncShare": { "producers": 50, "artists": 50 },
     "liveBookingFee": "20% Comisión sobre utilidad neta de shows gestionados por Productores (80% Artistas)",
-    "socialMediaGuidelines": "Cuentas personales separadas, opción sufijo _black, alineación con patrocinios (ej. Bacardí)",
-    "brandProtection": "Black KNVRS validado fonéticamente sin conflicto con sector textil"
+    "socialMediaGuidelines": "Cuentas personalizadas, opción sufijo _black, alineación con patrocinios",
+    "brandProtection": "Black KNVRS validado fonéticamente"
   }
 }

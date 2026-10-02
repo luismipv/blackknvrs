@@ -1,100 +1,110 @@
-// BLACK KNVRS // Band Portal Controller (Y2K Chrome Edition)
+// BLACK KNVRS // Band Portal Controller (Y2K Chrome Edition v2)
+// Full Operations: Auth, Task Management, Song Ideas Hub, Audio Vault & Real-Time Sync
+
 let portalData = null;
 let currentMember = null;
 let enteredPin = "";
 let currentTrackIndex = 0;
 let isPlaying = false;
+let currentTaskFilter = 'all';
 
-// Embedded fallback data
-const FALLBACK_DATA = {
-  "band": {
-    "name": "Black KNVRS",
-    "theme": { "accentChrome": "#E5E5EB" }
-  },
-  "members": [
-    { "id": "pia", "name": "Pía", "fullName": "Valeria / Pía", "role": "Cantante / Compositora", "color": "#FF3385", "pin": "1001", "avatar": "images/pia.png", "operationalRole": "Voz principal, letras, vocería de prensa y selección de fotos semestrales." },
-    { "id": "adri", "name": "Adri", "fullName": "Adrianne", "role": "Bajista / Compositora", "color": "#FF2A55", "pin": "1002", "avatar": "images/adri.png", "operationalRole": "Líneas de bajo, co-composición lírica/armónica y supervisión de vestuario." },
-    { "id": "maff", "name": "Maff", "fullName": "Maff", "role": "Baterista / Compositora", "color": "#9D4EDD", "pin": "1004", "avatar": "images/maff.png", "operationalRole": "Batería, bases rítmicas, co-composición y tesorería del fondo ('La Caja')." },
-    { "id": "dani", "name": "Dani", "fullName": "Dani", "role": "Guitarrista / Arreglista", "color": "#00E676", "pin": "1005", "avatar": "images/dani.png", "operationalRole": "Guitarras líderes, arreglos armónicos y supervisión del backline técnico." },
-    { "id": "kar", "name": "Kar", "fullName": "Kar", "role": "Guitarrista / Arreglista", "color": "#0070F3", "pin": "1003", "avatar": "images/kar.png", "operationalRole": "Guitarras rítmicas, arreglos, disciplina de ensayos y scouting de foros CDMX." }
-  ],
-  "singles": [
-    { "id": "s1", "title": "I LIKE 2 BE", "type": "Viral Kickoff (Bruses Cover - Redes)", "status": "Ready for Social Push", "releaseDate": "2026-10-23", "audioFile": "audio/I LIKE 2 BE.mp3", "meta": "Video Edit / Social Audio • Exclusivo Redes", "assets": { "driveUrl": "#", "hasCoverArt": true, "hasMusicVideo": true, "hasStems": true }, "deliverablesSummary": "Campaña de guerrilla en TikTok/YouTube. Exclusivo redes por derechos." },
-    { "id": "s2", "title": "Electricidad", "type": "Single Debut Oficial 01 (Inédito - DSPs)", "status": "Pre-production / Video Prep", "releaseDate": "2027-01-22", "audioFile": "audio/CFE.mp3", "meta": "Mix Final v2 • -14.3 LUFS", "assets": { "driveUrl": "#", "hasCoverArt": true, "hasMusicVideo": false, "hasStems": true }, "deliverablesSummary": "Single Debut en DSPs + Videoclip Oficial. Rodaje 7-8 Nov 2026. Pitch DSPs: 28 Dic." },
-    { "id": "s3", "title": "Un Aplauso Para Ti", "type": "Single 02 (Inédito - DSPs)", "status": "Asset Audit & Curaduria", "releaseDate": "2027-03-05", "audioFile": "audio/Un Aplauso Para Ti.mp3", "meta": "Master v1 • -14.0 LUFS", "assets": { "driveUrl": "#", "hasCoverArt": false, "hasMusicVideo": false, "hasStems": true }, "deliverablesSummary": "Master sonoro listo. Ventana de curaduría gráfica: 25 Ene - 12 Feb 2027." },
-    { "id": "s4", "title": "Si Fuera Yo", "type": "Single 03 / Debut EP (Inédito - DSPs)", "status": "Asset Audit & Curaduria", "releaseDate": "2027-04-23", "audioFile": "audio/Si Fuera Yo.mp3", "meta": "Master v1 • -13.8 LUFS", "assets": { "driveUrl": "#", "hasCoverArt": false, "hasMusicVideo": false, "hasStems": true }, "deliverablesSummary": "Focus track del EP consolidado. Ventana de curaduría: 08-26 Marzo 2027." },
-    { "id": "s5", "title": "Canción de Adri", "type": "Songwriting Workshop #1", "status": "Demo En Progreso", "releaseDate": "TBD (EP 2)", "audioFile": "audio/Cancion de Adri.mp3", "meta": "Maqueta Estudio Adri • Bass & Riffs", "assets": { "driveUrl": "#", "hasCoverArt": false, "hasMusicVideo": false, "hasStems": false }, "deliverablesSummary": "Maqueta de Adri con base armónica y bajo. En proceso de estructura lírica." },
-    { "id": "s6", "title": "Aunque Todo Esté Mal", "type": "Songwriting Workshop #2", "status": "Demo En Progreso", "releaseDate": "TBD (EP 2)", "audioFile": "audio/Aunque todo este mal.m4a", "meta": "Maqueta M4A Directa", "assets": { "driveUrl": "#", "hasCoverArt": false, "hasMusicVideo": false, "hasStems": false }, "deliverablesSummary": "Revisión de tempo y dinámica de puente/coro con los productores." },
-    { "id": "s7", "title": "Canción de Kar", "type": "Songwriting Workshop #3", "status": "Demo En Progreso", "releaseDate": "TBD (EP 2)", "audioFile": "audio/Cancion de Kar.mp3", "meta": "Maqueta Estudio Kar • Guitarras", "assets": { "driveUrl": "#", "hasCoverArt": false, "hasMusicVideo": false, "hasStems": false }, "deliverablesSummary": "Maqueta con riffs de guitarra y groove enérgico de Kar." }
-  ],
-  "tasks": [
-    { "id": "t1", "title": "Entrega de Press Kit (EPK) y Technical Rider final", "assignedTo": "Management", "dueDate": "2026-09-30", "priority": "Crítica", "status": "In Progress" },
-    { "id": "t2", "title": "Propuesta y selección de fotos del semestre para historias/posts", "assignedTo": "All", "dueDate": "2026-10-05", "priority": "Alta", "status": "Pending" },
-    { "id": "t3", "title": "Grabación de 2 videos de formato corto mostrando 'I LIKE 2 BE'", "assignedTo": "pia", "dueDate": "2026-10-12", "priority": "Alta", "status": "Pending" },
-    { "id": "t4", "title": "Aprobación de Guión y Tratamiento de 'Electricidad'", "assignedTo": "adri", "dueDate": "2026-10-16", "priority": "Alta", "status": "Pending" },
-    { "id": "t5", "title": "Scouting y contacto con foros indie en CDMX para show debut", "assignedTo": "kar", "dueDate": "2026-10-25", "priority": "Media", "status": "Pending" },
-    { "id": "t6", "title": "Rodaje de videoclip oficial 'Electricidad' (Set Call 08:00)", "assignedTo": "All", "dueDate": "2026-11-07", "priority": "Crítica", "status": "Scheduled" },
-    { "id": "t7", "title": "Secret Listening Session & Focus Group Presencial", "assignedTo": "All", "dueDate": "2026-12-05", "priority": "Alta", "status": "Scheduled" },
-    { "id": "t8", "title": "Balance y reporte de aportaciones a 'La Caja'", "assignedTo": "maff", "dueDate": "2026-10-31", "priority": "Baja", "status": "In Progress" }
-  ],
-  "timeline": [
-    { "type": "release", "date": "01 Oct 2026", "title": "Sesión de Fotos Oficial & Post Grupal", "desc": "Lanzamiento de foto grupal por Pavel Guerra y arranque de posts individuales colaborativos cada 2 días." },
-    { "type": "live", "date": "05 Oct 2026", "title": "Anuncio Oficial del Show del 23 de Octubre", "desc": "Publicación del flyer y fecha del concierto de estreno." },
-    { "type": "release", "date": "12 Oct 2026", "title": "Activación TikTok & YouTube Oficial", "desc": "Lanzamiento de contenido de estudio con correo de contacto institucional." },
-    { "type": "release", "date": "20 Oct 2026", "title": "Video de Grabación de 'I LIKE 2 BE'", "desc": "Publicación del making-of del tema en TikTok / Reels." },
-    { "type": "release", "date": "21 Oct 2026", "title": "Teaser Oficial 'I LIKE 2 BE'", "desc": "Publicación del soundbite oficial a 48 horas del concierto." },
-    { "type": "live", "date": "23 Oct 2026", "title": "CONCIERTO EN VIVO + Estreno Oficial", "desc": "Estreno del tema en vivo durante el show y publicación del video en YouTube." },
-    { "type": "songwriting", "date": "Noviembre 2026", "title": "Inicio Talleres de Composición (CDMX/Puebla)", "desc": "Composición de bases punk con Kar y Pillo posterior al show de octubre, con firma de split sheet." },
-    { "type": "video", "date": "07-11 Nov 2026", "title": "Rodaje Videoclip 'Electricidad'", "desc": "Grabación en Break Room / Set LED. Target estratégico: Bruses." },
-    { "type": "live", "date": "05 Dic 2026", "title": "Secret Listening Session & Focus Group", "desc": "Escucha privada con muestra de 10-15 morras antes de vacaciones de invierno." },
-    { "type": "release", "date": "22 Ene 2027", "title": "Estreno Oficial Single 01: 'Electricidad'", "desc": "Single Debut Oficial en Spotify/Apple Music + Videoclip en YouTube." },
-    { "type": "release", "date": "05 Mar 2027", "title": "Estreno Oficial Single 02: 'Un Aplauso Para Ti'", "desc": "Lanzamiento Waterfall en Spotify con arrastre de 'Electricidad'." },
-    { "type": "release", "date": "23 Abr 2027", "title": "Estreno Single 03: 'Si Fuera Yo' + Debut EP", "desc": "Cierre de era con el Debut EP compilatorio y showcase de 40+ personas." }
-  ]
-};
+const STORAGE_KEY = 'bk_portal_data_v2';
+const ACTIVE_MEMBER_KEY = 'bk_active_member_id';
+const FIREBASE_CONFIG_KEY = 'bk_firebase_config';
 
-// Initialize Application
+// -------------------------------------------------------------
+// 1. INITIALIZATION & DATA PERSISTENCE
+// -------------------------------------------------------------
 async function initApp() {
+  await loadPortalData();
+  setupAuthUI();
+  setupNavigation();
+  setupTaskManagement();
+  setupSongIdeas();
+  setupAudioPlayer();
+  setupVideoPlayer();
+  setupFirebaseSync();
+  startCountdown();
+
+  // Auto-login if previously active in this browser session
+  const savedMemberId = sessionStorage.getItem(ACTIVE_MEMBER_KEY);
+  if (savedMemberId && portalData.members) {
+    const found = portalData.members.find(m => m.id === savedMemberId);
+    if (found) {
+      currentMember = found;
+      loginSuccess();
+    }
+  }
+}
+
+async function loadPortalData() {
   try {
     const res = await fetch('data/portal-data.json');
     if (res.ok) {
-      const data = await res.json();
-      portalData = { ...FALLBACK_DATA, ...data };
-    } else {
-      portalData = FALLBACK_DATA;
+      const defaultData = await res.json();
+      
+      // Load saved state from localStorage if available
+      const localSaved = localStorage.getItem(STORAGE_KEY);
+      if (localSaved) {
+        try {
+          const parsed = JSON.parse(localSaved);
+          // Merge remote base with user added tasks & ideas
+          portalData = {
+            ...defaultData,
+            tasks: parsed.tasks || defaultData.tasks,
+            songIdeas: parsed.songIdeas || defaultData.songIdeas || []
+          };
+        } catch (err) {
+          console.warn("Error parsing local data, using default:", err);
+          portalData = defaultData;
+        }
+      } else {
+        portalData = defaultData;
+      }
     }
   } catch (e) {
-    console.warn("Using fallback local data", e);
-    portalData = FALLBACK_DATA;
+    console.error("Critical: Could not load portal data", e);
   }
-
-  setupAuthUI();
-  setupNavigation();
-  setupAudioPlayer();
-  setupVideoPlayer();
-  startCountdown();
 }
 
-// Auth & Member Selection
+function saveData() {
+  if (!portalData) return;
+  const toSave = {
+    tasks: portalData.tasks,
+    songIdeas: portalData.songIdeas
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+
+  // Push to Firebase if configured
+  syncToCloud(toSave);
+}
+
+// -------------------------------------------------------------
+// 2. AUTHENTICATION & PIN SECURITY
+// -------------------------------------------------------------
 function setupAuthUI() {
   const memberContainer = document.getElementById('memberButtons');
+  if (!memberContainer || !portalData.members) return;
+
   memberContainer.innerHTML = '';
 
   portalData.members.forEach((m, idx) => {
     const chip = document.createElement('div');
     chip.className = `member-chip ${idx === 0 ? 'selected' : ''}`;
-    chip.style.setProperty('--chip-color', m.color);
+    chip.style.setProperty('--chip-color', m.color || '#fff');
     chip.dataset.memberId = m.id;
     chip.innerHTML = `
-      <img src="${m.avatar || ''}" onerror="this.style.display='none'" class="chip-avatar-img">
+      <img src="${m.avatar || 'images/logo.png'}" onerror="this.src='images/logo.png'" class="chip-avatar-img">
       <span class="chip-name">${m.name.split('/')[0].trim()}</span>
     `;
     chip.addEventListener('click', () => selectMember(m.id));
     memberContainer.appendChild(chip);
   });
 
+  // Default to first member
   currentMember = portalData.members[0];
   updateAccentColor(currentMember.color);
+  updateSelectedMemberDisplay(currentMember);
 
   // Keypad logic
   const dots = document.querySelectorAll('.pin-dots .dot');
@@ -112,16 +122,27 @@ function setupAuthUI() {
     });
   });
 
-  document.getElementById('clearBtn').addEventListener('click', () => {
-    enteredPin = "";
-    updateDots();
-    errorEl.textContent = "";
-  });
+  // Clear button
+  const clearBtn = document.getElementById('clearBtn');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      enteredPin = "";
+      updateDots();
+      errorEl.textContent = "";
+    });
+  }
 
-  // Direct bypass button for immediate access
-  document.getElementById('bypassBtn').addEventListener('click', () => {
-    loginSuccess();
-  });
+  // Delete button (one digit)
+  const delBtn = document.getElementById('delBtn');
+  if (delBtn) {
+    delBtn.addEventListener('click', () => {
+      if (enteredPin.length > 0) {
+        enteredPin = enteredPin.slice(0, -1);
+        updateDots();
+        errorEl.textContent = "";
+      }
+    });
+  }
 
   function updateDots() {
     dots.forEach((dot, i) => {
@@ -130,7 +151,9 @@ function setupAuthUI() {
   }
 
   function validatePin() {
+    // Valid PIN matches member's PIN or master override
     if (enteredPin === currentMember.pin || enteredPin === "9999" || enteredPin === "1234") {
+      sessionStorage.setItem(ACTIVE_MEMBER_KEY, currentMember.id);
       loginSuccess();
     } else {
       errorEl.textContent = "PIN incorrecto. Intenta de nuevo.";
@@ -138,7 +161,7 @@ function setupAuthUI() {
         enteredPin = "";
         updateDots();
         errorEl.textContent = "";
-      }, 1000);
+      }, 900);
     }
   }
 
@@ -148,176 +171,539 @@ function setupAuthUI() {
       c.classList.toggle('selected', c.dataset.memberId === id);
     });
     updateAccentColor(currentMember.color);
+    updateSelectedMemberDisplay(currentMember);
     enteredPin = "";
     updateDots();
     errorEl.textContent = "";
   }
 
-  document.getElementById('switchUserBtn').addEventListener('click', () => {
-    document.getElementById('authOverlay').classList.remove('hidden');
-    document.getElementById('app').classList.add('hidden');
-    enteredPin = "";
-    updateDots();
-  });
+  function updateSelectedMemberDisplay(member) {
+    const nameEl = document.getElementById('smdName');
+    const roleEl = document.getElementById('smdRole');
+    if (nameEl) nameEl.textContent = member.fullName || member.name;
+    if (roleEl) roleEl.textContent = member.role;
+  }
+
+  // Logout / Switch User
+  const switchBtn = document.getElementById('switchUserBtn');
+  if (switchBtn) {
+    switchBtn.addEventListener('click', () => {
+      sessionStorage.removeItem(ACTIVE_MEMBER_KEY);
+      document.getElementById('authOverlay').classList.remove('hidden');
+      document.getElementById('app').classList.add('hidden');
+      enteredPin = "";
+      updateDots();
+    });
+  }
 }
 
 function updateAccentColor(color) {
-  document.documentElement.style.setProperty('--active-accent', color);
+  document.documentElement.style.setProperty('--active-accent', color || '#ff3385');
 }
 
 function loginSuccess() {
   document.getElementById('authOverlay').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
+  updateAccentColor(currentMember.color);
+
+  // Render all active views
+  renderTopNav();
   renderDashboard();
+  renderTasksManagement();
+  renderSongIdeas();
   renderTimeline('all');
   renderSingles();
   renderTrackList();
 }
 
-// Navigation Tabs
-function setupNavigation() {
-  const navBtns = document.querySelectorAll('.bottom-nav .nav-item');
-  const panes = document.querySelectorAll('.tab-pane');
+function renderTopNav() {
+  const nameEl = document.getElementById('memberActiveName');
+  const tagEl = document.getElementById('memberActiveTag');
+  const dotEl = document.getElementById('memberDot');
 
-  navBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      navBtns.forEach(b => b.classList.remove('active'));
-      panes.forEach(p => p.classList.remove('active'));
-
-      btn.classList.add('active');
-      const targetPane = document.getElementById(btn.dataset.tab);
-      if (targetPane) targetPane.classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  });
-
-  // Filter pills on timeline
-  document.querySelectorAll('.filter-pill').forEach(pill => {
-    pill.addEventListener('click', () => {
-      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      renderTimeline(pill.dataset.filter);
-    });
-  });
+  if (nameEl) nameEl.textContent = currentMember.name.split('/')[0].trim();
+  if (tagEl) tagEl.textContent = currentMember.isAdmin ? "Manager" : "Banda";
+  if (dotEl) dotEl.style.background = currentMember.color || '#fff';
 }
 
-// Render Dashboard
+// -------------------------------------------------------------
+// 3. TAB 1: DASHBOARD (HOY & MIS RESPONSABILIDADES)
+// -------------------------------------------------------------
 function renderDashboard() {
-  document.getElementById('memberActiveName').textContent = currentMember.name;
-  document.getElementById('memberDot').style.background = currentMember.color;
-  document.getElementById('roleBadge').textContent = currentMember.role;
-  document.getElementById('roleDescription').textContent = currentMember.operationalRole;
+  const greetingEl = document.getElementById('dashGreeting');
+  const subtitleEl = document.getElementById('dashSubtitle');
+  const roleBadge = document.getElementById('roleBadge');
+  const roleDesc = document.getElementById('roleDescription');
 
-  // Filter tasks for this member or All
+  if (greetingEl) {
+    greetingEl.textContent = `HOLA, ${currentMember.name.split('/')[0].toUpperCase().trim()}`;
+  }
+  if (subtitleEl) {
+    subtitleEl.textContent = currentMember.isAdmin 
+      ? "Centro de Mando: Asignación de tareas y supervisión general" 
+      : "Tus responsabilidades asignadas y próximas fechas de entrega";
+  }
+  if (roleBadge) roleBadge.textContent = currentMember.role;
+  if (roleDesc) roleDesc.textContent = currentMember.operationalRole;
+
+  // Filter tasks for this user:
+  // If Manager: show all pending tasks across the band
+  // If Member: show tasks assigned to this member or to 'all'
   const taskListEl = document.getElementById('myTaskList');
+  const countBadge = document.getElementById('myTaskCount');
+  const completedListEl = document.getElementById('completedTaskList');
+  const completedCountEl = document.getElementById('completedCount');
+
+  if (!taskListEl) return;
   taskListEl.innerHTML = '';
+  if (completedListEl) completedListEl.innerHTML = '';
 
-  const myTasks = portalData.tasks.filter(t => 
-    t.assignedTo.toLowerCase() === currentMember.id || 
-    t.assignedTo.toLowerCase() === 'all' ||
-    (currentMember.id === 'pia' && t.assignedTo.toLowerCase() === 'management')
-  );
+  const relevantTasks = portalData.tasks.filter(t => {
+    if (currentMember.isAdmin) return true;
+    return t.assignedTo.toLowerCase() === currentMember.id.toLowerCase() || 
+           t.assignedTo.toLowerCase() === 'all';
+  });
 
-  if (myTasks.length === 0) {
-    taskListEl.innerHTML = `<p style="font-size:0.8rem; color:var(--text-muted);">No tienes tareas pendientes urgentes.</p>`;
+  const pendingTasks = relevantTasks.filter(t => t.status !== 'Completada');
+  const completedTasks = relevantTasks.filter(t => t.status === 'Completada');
+
+  if (countBadge) countBadge.textContent = `${pendingTasks.length} pendientes`;
+  if (completedCountEl) completedCountEl.textContent = completedTasks.length;
+
+  if (pendingTasks.length === 0) {
+    taskListEl.innerHTML = `
+      <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:1rem; text-align:center;">
+        <span style="font-size:1.5rem;">✨</span>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.3rem;">¡Todo al día! No tienes responsabilidades pendientes.</p>
+      </div>
+    `;
   } else {
-    myTasks.forEach(task => {
-      const item = document.createElement('div');
-      item.className = 'task-item';
-      item.innerHTML = `
-        <input type="checkbox" class="task-checkbox" ${task.status === 'Completed' ? 'checked' : ''}>
-        <div class="task-content">
-          <div class="task-title">${task.title}</div>
-          <div class="task-meta">
-            <span>📅 Entrega: ${task.dueDate}</span>
-            <span class="p-${task.priority.toLowerCase()}">Prioridad: ${task.priority}</span>
-          </div>
-        </div>
-      `;
-      taskListEl.appendChild(item);
+    pendingTasks.forEach(task => {
+      taskListEl.appendChild(createTaskElement(task, false));
     });
   }
 
-  // Quick Milestones
+  if (completedTasks.length > 0 && completedListEl) {
+    completedTasks.forEach(task => {
+      completedListEl.appendChild(createTaskElement(task, true));
+    });
+  }
+
+  // Toggle completed drawer
+  const toggleBtn = document.getElementById('toggleCompletedBtn');
+  if (toggleBtn) {
+    toggleBtn.onclick = () => {
+      if (completedListEl) {
+        completedListEl.classList.toggle('hidden');
+        const icon = toggleBtn.querySelector('.caret-icon');
+        if (icon) icon.textContent = completedListEl.classList.contains('hidden') ? '▼' : '▲';
+      }
+    };
+  }
+
+  // Milestones
   const milestonesEl = document.getElementById('quickMilestones');
-  milestonesEl.innerHTML = '';
-  const upcoming = (portalData.timeline || FALLBACK_DATA.timeline).slice(0, 3);
-  upcoming.forEach(m => {
-    const row = document.createElement('div');
-    row.className = 'milestone-item';
-    row.innerHTML = `
-      <span>${m.title}</span>
-      <span class="m-date">${m.date}</span>
-    `;
-    milestonesEl.appendChild(row);
+  if (milestonesEl) {
+    milestonesEl.innerHTML = '';
+    const timeline = portalData.timeline || [];
+    timeline.slice(0, 3).forEach(m => {
+      const row = document.createElement('div');
+      row.className = 'milestone-item';
+      row.innerHTML = `
+        <span>${m.title}</span>
+        <span class="m-date">${m.date}</span>
+      `;
+      milestonesEl.appendChild(row);
+    });
+  }
+}
+
+function calculateDueStatus(dueDateStr) {
+  if (!dueDateStr) return { text: "Sin fecha", className: "due-normal" };
+  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const [y, m, d] = dueDateStr.split('-').map(Number);
+  const due = new Date(y, m - 1, d);
+  due.setHours(0, 0, 0, 0);
+
+  const diffDays = Math.round((due - today) / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) {
+    return { text: `Atrasada (${Math.abs(diffDays)}d)`, className: "due-overdue" };
+  } else if (diffDays === 0) {
+    return { text: "¡Vence Hoy!", className: "due-today" };
+  } else if (diffDays === 1) {
+    return { text: "Vence Mañana", className: "due-soon" };
+  } else if (diffDays <= 3) {
+    return { text: `Vence en ${diffDays} días`, className: "due-soon" };
+  } else {
+    return { text: `Entrega: ${dueDateStr}`, className: "due-normal" };
+  }
+}
+
+function createTaskElement(task, isCompleted) {
+  const card = document.createElement('div');
+  card.className = `task-card ${isCompleted ? 'is-completed' : ''}`;
+  card.dataset.taskId = task.id;
+
+  const dueInfo = calculateDueStatus(task.dueDate);
+  const assigneeName = getAssigneeName(task.assignedTo);
+  const priorityClass = `p-${(task.priority || 'media').toLowerCase()}`;
+
+  card.innerHTML = `
+    <div class="task-header-row">
+      <button class="task-check-btn ${isCompleted ? 'checked' : ''}" title="${isCompleted ? 'Reabrir tarea' : 'Marcar como completada'}">
+        ${isCompleted ? '✓' : ''}
+      </button>
+      <div class="task-main-info">
+        <div class="task-title">${escapeHTML(task.title)}</div>
+        ${task.description ? `<p class="task-desc">${escapeHTML(task.description)}</p>` : ''}
+        <div class="task-meta-bar">
+          <span class="due-badge ${dueInfo.className}">📅 ${dueInfo.text}</span>
+          <span class="task-badge ${priorityClass}">Prioridad: ${task.priority || 'Normal'}</span>
+          <span class="assignee-chip" style="color:var(--chrome-highlight);">Para: ${assigneeName}</span>
+          ${task.category ? `<span class="task-badge">${task.category}</span>` : ''}
+        </div>
+      </div>
+    </div>
+    ${currentMember.isAdmin ? `
+      <div class="task-actions">
+        <button class="btn-task-action delete" data-delete-id="${task.id}">🗑 Eliminar</button>
+      </div>
+    ` : ''}
+  `;
+
+  // Checkbox toggle status
+  const checkBtn = card.querySelector('.task-check-btn');
+  checkBtn.addEventListener('click', () => {
+    toggleTaskStatus(task.id);
+  });
+
+  // Delete button (Admin)
+  const delBtn = card.querySelector('.btn-task-action.delete');
+  if (delBtn) {
+    delBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (confirm(`¿Eliminar la tarea "${task.title}"?`)) {
+        deleteTask(task.id);
+      }
+    });
+  }
+
+  return card;
+}
+
+function getAssigneeName(assigneeId) {
+  if (!assigneeId || assigneeId.toLowerCase() === 'all') return "Todas (Banda)";
+  const member = portalData.members.find(m => m.id.toLowerCase() === assigneeId.toLowerCase());
+  return member ? member.name.split('/')[0].trim() : assigneeId;
+}
+
+function toggleTaskStatus(taskId) {
+  const task = portalData.tasks.find(t => t.id === taskId);
+  if (!task) return;
+
+  if (task.status === 'Completada') {
+    task.status = 'Pendiente';
+    task.completedAt = null;
+  } else {
+    task.status = 'Completada';
+    task.completedAt = new Date().toISOString();
+  }
+
+  saveData();
+  renderDashboard();
+  renderTasksManagement();
+}
+
+function deleteTask(taskId) {
+  portalData.tasks = portalData.tasks.filter(t => t.id !== taskId);
+  saveData();
+  renderDashboard();
+  renderTasksManagement();
+}
+
+// -------------------------------------------------------------
+// 4. TAB 2: GESTIÓN DE TAREAS (PANEL ADMIN & ASIGNACIÓN)
+// -------------------------------------------------------------
+function setupTaskManagement() {
+  const openBtn = document.getElementById('openNewTaskBtn');
+  const closeBtn = document.getElementById('closeTaskFormBtn');
+  const formCard = document.getElementById('adminTaskFormCard');
+  const form = document.getElementById('createTaskForm');
+
+  if (openBtn) {
+    openBtn.addEventListener('click', () => {
+      formCard.classList.remove('hidden');
+      formCard.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      formCard.classList.add('hidden');
+    });
+  }
+
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const newTask = {
+        id: `t_${Date.now()}`,
+        title: document.getElementById('taskTitle').value.trim(),
+        description: document.getElementById('taskDesc').value.trim(),
+        assignedTo: document.getElementById('taskAssignee').value,
+        dueDate: document.getElementById('taskDueDate').value,
+        priority: document.getElementById('taskPriority').value,
+        category: document.getElementById('taskCategory').value,
+        status: 'Pendiente',
+        assignedBy: currentMember.name,
+        createdAt: new Date().toISOString()
+      };
+
+      portalData.tasks.unshift(newTask);
+      saveData();
+
+      form.reset();
+      formCard.classList.add('hidden');
+      renderDashboard();
+      renderTasksManagement();
+    });
+  }
+
+  // Filter Buttons
+  document.querySelectorAll('#tasksMemberFilters .t-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#tasksMemberFilters .t-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTaskFilter = btn.dataset.member;
+      renderTasksManagement();
+    });
   });
 }
 
-// Render Timeline / Roadmap
-function renderTimeline(filter) {
-  const container = document.getElementById('timelineList');
+function renderTasksManagement() {
+  const openBtn = document.getElementById('openNewTaskBtn');
+  if (openBtn) {
+    // Only Luis Miguel can create & assign tasks
+    if (currentMember.isAdmin) {
+      openBtn.classList.remove('hidden');
+    } else {
+      openBtn.classList.add('hidden');
+    }
+  }
+
+  const listEl = document.getElementById('tasksGlobalList');
+  if (!listEl) return;
+  listEl.innerHTML = '';
+
+  let filtered = portalData.tasks;
+  if (currentTaskFilter !== 'all') {
+    filtered = portalData.tasks.filter(t => t.assignedTo.toLowerCase() === currentTaskFilter.toLowerCase());
+  }
+
+  if (filtered.length === 0) {
+    listEl.innerHTML = `
+      <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:1.2rem; text-align:center;">
+        <p style="font-size:0.8rem; color:var(--text-muted);">No hay tareas asignadas con este filtro.</p>
+      </div>
+    `;
+    return;
+  }
+
+  filtered.forEach(task => {
+    listEl.appendChild(createTaskElement(task, task.status === 'Completada'));
+  });
+}
+
+// -------------------------------------------------------------
+// 5. TAB 3: SONG IDEAS HUB (LABORATORIO DE CANCIONES)
+// -------------------------------------------------------------
+function setupSongIdeas() {
+  const openBtn = document.getElementById('openNewIdeaBtn');
+  const closeBtn = document.getElementById('closeIdeaFormBtn');
+  const formCard = document.getElementById('newIdeaFormCard');
+  const form = document.getElementById('createIdeaForm');
+
+  if (openBtn) {
+    openBtn.addEventListener('click', () => {
+      formCard.classList.remove('hidden');
+      formCard.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      formCard.classList.add('hidden');
+    });
+  }
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById('ideaTitle').value.trim();
+      const key = document.getElementById('ideaKey').value.trim();
+      const bpm = document.getElementById('ideaBpm').value.trim();
+      const driveUrl = document.getElementById('ideaDriveUrl').value.trim();
+      const lyrics = document.getElementById('ideaLyrics').value.trim();
+      const notes = document.getElementById('ideaNotes').value.trim();
+      const fileInput = document.getElementById('ideaAudioFile');
+
+      let audioUrl = "";
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        // Create local object URL for preview
+        const file = fileInput.files[0];
+        audioUrl = URL.createObjectURL(file);
+      }
+
+      const newIdea = {
+        id: `idea_${Date.now()}`,
+        title: title,
+        authorId: currentMember.id,
+        authorName: currentMember.name.split('/')[0].trim(),
+        date: new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'short' }),
+        audioUrl: audioUrl,
+        driveUrl: driveUrl,
+        status: "Boceto",
+        key: key,
+        bpm: bpm,
+        lyrics: lyrics,
+        notes: notes,
+        comments: []
+      };
+
+      if (!portalData.songIdeas) portalData.songIdeas = [];
+      portalData.songIdeas.unshift(newIdea);
+      saveData();
+
+      form.reset();
+      formCard.classList.add('hidden');
+      renderSongIdeas();
+    });
+  }
+}
+
+function renderSongIdeas() {
+  const container = document.getElementById('ideasStream');
+  if (!container) return;
   container.innerHTML = '';
 
-  const items = portalData.timeline || FALLBACK_DATA.timeline;
-  const filtered = filter === 'all' ? items : items.filter(it => it.type === filter);
+  const ideas = portalData.songIdeas || [];
 
-  filtered.forEach(it => {
-    const card = document.createElement('div');
-    card.className = 'timeline-card';
-    card.innerHTML = `
-      <div class="tl-header">
-        <span class="tl-tag">${it.type}</span>
-        <span class="tl-date">${it.date}</span>
+  if (ideas.length === 0) {
+    container.innerHTML = `
+      <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:1.5rem; text-align:center;">
+        <span style="font-size:1.8rem;">💡</span>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.5rem;">Aún no hay ideas registradas. ¡Sé la primera en subir un boceto o demo!</p>
       </div>
-      <div class="tl-title">${it.title}</div>
-      <div class="tl-desc">${it.desc}</div>
     `;
+    return;
+  }
+
+  ideas.forEach(idea => {
+    const card = document.createElement('div');
+    card.className = 'idea-card';
+    card.dataset.ideaId = idea.id;
+
+    card.innerHTML = `
+      <div class="idea-header">
+        <div>
+          <div class="idea-title">${escapeHTML(idea.title)}</div>
+          <div class="idea-author-row">
+            <span>Por: <strong>${escapeHTML(idea.authorName)}</strong></span>
+            <span>•</span>
+            <span>${idea.date}</span>
+          </div>
+        </div>
+        <span class="idea-tag-status">${idea.status || 'Boceto'}</span>
+      </div>
+
+      <div class="idea-pills-row">
+        ${idea.key ? `<span class="idea-pill">🎼 ${escapeHTML(idea.key)}</span>` : ''}
+        ${idea.bpm ? `<span class="idea-pill">⏱ ${escapeHTML(idea.bpm)}</span>` : ''}
+        ${idea.driveUrl ? `<a href="${idea.driveUrl}" target="_blank" class="idea-pill" style="text-decoration:none;">📁 Drive</a>` : ''}
+      </div>
+
+      ${idea.audioUrl ? `
+        <div class="idea-audio-player">
+          <audio controls preload="metadata" src="${idea.audioUrl}"></audio>
+        </div>
+      ` : ''}
+
+      ${idea.notes ? `
+        <div class="idea-notes-box">
+          <strong>Notas:</strong> ${escapeHTML(idea.notes)}
+        </div>
+      ` : ''}
+
+      ${idea.lyrics ? `
+        <div class="idea-lyrics-collapsible">
+          <button class="lyrics-toggle-btn">Ver Letra / Acordes ▾</button>
+          <div class="lyrics-content hidden">${escapeHTML(idea.lyrics)}</div>
+        </div>
+      ` : ''}
+
+      <div class="idea-comments-box">
+        <div class="comments-title">Comentarios & Feedback (${(idea.comments || []).length})</div>
+        <div class="comments-list">
+          ${(idea.comments || []).map(c => `
+            <div class="comment-item">
+              <span class="comment-author">${escapeHTML(c.authorName || 'Banda')}:</span>
+              <span class="comment-text">${escapeHTML(c.text)}</span>
+            </div>
+          `).join('')}
+        </div>
+        <form class="add-comment-form">
+          <input type="text" class="input-comment" placeholder="Escribe un feedback o idea..." required>
+          <button type="submit" class="btn-comment">Enviar</button>
+        </form>
+      </div>
+    `;
+
+    // Lyrics toggle
+    const lyricsBtn = card.querySelector('.lyrics-toggle-btn');
+    const lyricsContent = card.querySelector('.lyrics-content');
+    if (lyricsBtn && lyricsContent) {
+      lyricsBtn.addEventListener('click', () => {
+        lyricsContent.classList.toggle('hidden');
+        lyricsBtn.textContent = lyricsContent.classList.contains('hidden') 
+          ? 'Ver Letra / Acordes ▾' 
+          : 'Ocultar Letra ▴';
+      });
+    }
+
+    // Add comment listener
+    const commentForm = card.querySelector('.add-comment-form');
+    if (commentForm) {
+      commentForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = commentForm.querySelector('.input-comment');
+        const text = input.value.trim();
+        if (!text) return;
+
+        if (!idea.comments) idea.comments = [];
+        idea.comments.push({
+          authorName: currentMember.name.split('/')[0].trim(),
+          text: text,
+          date: new Date().toLocaleDateString('es-MX')
+        });
+
+        saveData();
+        renderSongIdeas();
+      });
+    }
+
     container.appendChild(card);
   });
 }
 
-// Render Singles & Assets
-function renderSingles() {
-  const grid = document.getElementById('singlesGrid');
-  grid.innerHTML = '';
-
-  portalData.singles.forEach((s, idx) => {
-    const card = document.createElement('div');
-    card.className = 'single-card';
-    const isReady = s.status.toLowerCase().includes('ready');
-
-    card.innerHTML = `
-      <div class="sc-header">
-        <div>
-          <span class="sc-badge">${s.type}</span>
-          <h4 class="sc-title">${s.title}</h4>
-        </div>
-        <span class="sc-status ${isReady ? 'ready' : 'prep'}">${s.status}</span>
-      </div>
-      <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.5rem;">${s.deliverablesSummary}</p>
-      <div class="sc-assets-row">
-        <span class="asset-pill ${s.assets.hasCoverArt ? 'active' : ''}">Portada HD ${s.assets.hasCoverArt ? '✓' : '—'}</span>
-        <span class="asset-pill ${s.assets.hasMusicVideo ? 'active' : ''}">Videoclip ${s.assets.hasMusicVideo ? '✓' : '—'}</span>
-        <span class="asset-pill ${s.assets.hasStems ? 'active' : ''}">Stems Audio ${s.assets.hasStems ? '✓' : '—'}</span>
-      </div>
-      <div class="sc-action-row">
-        <a href="${s.assets.driveUrl}" target="_blank" class="btn-drive">📁 Google Drive</a>
-        ${s.audioFile ? `<button class="btn-play-track" data-track-index="${idx}">Escuchar ▶</button>` : ''}
-      </div>
-    `;
-    grid.appendChild(card);
-  });
-
-  document.querySelectorAll('.btn-play-track').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const idx = parseInt(e.target.dataset.trackIndex);
-      loadAndPlayTrack(idx);
-      document.querySelector('.nav-item[data-tab="tab-player"]').click();
-    });
-  });
-}
-
-// Audio Vault Player
+// -------------------------------------------------------------
+// 6. TAB 4: MÚSICA & AUDIO VAULT PLAYER
+// -------------------------------------------------------------
 function setupAudioPlayer() {
   const audio = document.getElementById('audioElement');
   const playBtn = document.getElementById('playBtn');
@@ -327,18 +713,26 @@ function setupAudioPlayer() {
   const progressBar = document.getElementById('waveProgress');
   const waveformBar = document.getElementById('waveformBar');
 
+  if (!audio || !playBtn) return;
+
   playBtn.addEventListener('click', togglePlay);
-  prevBtn.addEventListener('click', () => {
-    currentTrackIndex = (currentTrackIndex - 1 + portalData.singles.length) % portalData.singles.length;
-    loadAndPlayTrack(currentTrackIndex);
-  });
-  nextBtn.addEventListener('click', () => {
-    currentTrackIndex = (currentTrackIndex + 1) % portalData.singles.length;
-    loadAndPlayTrack(currentTrackIndex);
-  });
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      const tracks = portalData.singles || [];
+      currentTrackIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
+      loadAndPlayTrack(currentTrackIndex);
+    });
+  }
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      const tracks = portalData.singles || [];
+      currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+      loadAndPlayTrack(currentTrackIndex);
+    });
+  }
 
   audio.addEventListener('timeupdate', () => {
-    if (audio.duration) {
+    if (audio.duration && progressBar) {
       const pct = (audio.currentTime / audio.duration) * 100;
       progressBar.style.width = `${pct}%`;
     }
@@ -347,21 +741,24 @@ function setupAudioPlayer() {
   audio.addEventListener('ended', () => {
     isPlaying = false;
     playBtn.textContent = '▶';
-    vinylDisc.classList.remove('spinning');
+    if (vinylDisc) vinylDisc.classList.remove('spinning');
   });
 
-  waveformBar.addEventListener('click', (e) => {
-    if (audio.duration) {
-      const rect = waveformBar.getBoundingClientRect();
-      const clickX = e.clientX - rect.left;
-      const pct = clickX / rect.width;
-      audio.currentTime = pct * audio.duration;
-    }
-  });
+  if (waveformBar) {
+    waveformBar.addEventListener('click', (e) => {
+      if (audio.duration) {
+        const rect = waveformBar.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const pct = clickX / rect.width;
+        audio.currentTime = pct * audio.duration;
+      }
+    });
+  }
 }
 
 function renderTrackList() {
   const list = document.getElementById('trackList');
+  if (!list || !portalData.singles) return;
   list.innerHTML = '';
 
   portalData.singles.forEach((s, idx) => {
@@ -371,7 +768,7 @@ function renderTrackList() {
     row.innerHTML = `
       <div>
         <div class="track-row-title">${s.title}</div>
-        <div class="track-row-type">${s.type} • ${s.meta || 'Audio'}</div>
+        <div class="track-row-type">${s.type}</div>
       </div>
       <span style="font-size:1.1rem; color:var(--active-accent);">▶</span>
     `;
@@ -381,7 +778,8 @@ function renderTrackList() {
 }
 
 function loadAndPlayTrack(index) {
-  const track = portalData.singles[index];
+  const tracks = portalData.singles || [];
+  const track = tracks[index];
   if (!track || !track.audioFile) return;
 
   currentTrackIndex = index;
@@ -389,8 +787,10 @@ function loadAndPlayTrack(index) {
   const playBtn = document.getElementById('playBtn');
   const vinylDisc = document.getElementById('vinylDisc');
 
-  document.getElementById('playerTitle').textContent = track.title;
-  document.getElementById('playerMeta').textContent = `${track.type} • ${track.meta || 'Audio Review'}`;
+  const titleEl = document.getElementById('playerTitle');
+  const metaEl = document.getElementById('playerMeta');
+  if (titleEl) titleEl.textContent = track.title;
+  if (metaEl) metaEl.textContent = track.type;
 
   audio.src = track.audioFile;
 
@@ -400,8 +800,8 @@ function loadAndPlayTrack(index) {
 
   audio.play().then(() => {
     isPlaying = true;
-    playBtn.textContent = '⏸';
-    vinylDisc.classList.add('spinning');
+    if (playBtn) playBtn.textContent = '⏸';
+    if (vinylDisc) vinylDisc.classList.add('spinning');
   }).catch(err => {
     console.warn("Autoplay notice:", err);
   });
@@ -422,61 +822,212 @@ function togglePlay() {
   if (isPlaying) {
     audio.pause();
     isPlaying = false;
-    playBtn.textContent = '▶';
-    vinylDisc.classList.remove('spinning');
+    if (playBtn) playBtn.textContent = '▶';
+    if (vinylDisc) vinylDisc.classList.remove('spinning');
   } else {
-    // Pause video if playing
     const vid = document.getElementById('officialVideoPlayer');
     if (vid && !vid.paused) vid.pause();
 
     audio.play();
     isPlaying = true;
-    playBtn.textContent = '⏸';
-    vinylDisc.classList.add('spinning');
+    if (playBtn) playBtn.textContent = '⏸';
+    if (vinylDisc) vinylDisc.classList.add('spinning');
   }
 }
 
-// Official Video Controller
+function renderSingles() {
+  const grid = document.getElementById('singlesGrid');
+  if (!grid || !portalData.singles) return;
+  grid.innerHTML = '';
+
+  portalData.singles.forEach((s, idx) => {
+    const card = document.createElement('div');
+    card.className = 'single-card';
+    const isReady = s.status && s.status.toLowerCase().includes('ready');
+
+    card.innerHTML = `
+      <div class="sc-header">
+        <div>
+          <span class="sc-badge">${s.type}</span>
+          <h4 class="sc-title">${s.title}</h4>
+        </div>
+        <span class="sc-status ${isReady ? 'ready' : 'prep'}">${s.status}</span>
+      </div>
+      <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.5rem;">${s.deliverablesSummary || ''}</p>
+      <div class="sc-assets-row">
+        <span class="asset-pill ${s.assets && s.assets.hasCoverArt ? 'active' : ''}">Portada HD ${s.assets && s.assets.hasCoverArt ? '✓' : '—'}</span>
+        <span class="asset-pill ${s.assets && s.assets.hasMusicVideo ? 'active' : ''}">Videoclip ${s.assets && s.assets.hasMusicVideo ? '✓' : '—'}</span>
+        <span class="asset-pill ${s.assets && s.assets.hasStems ? 'active' : ''}">Stems Audio ${s.assets && s.assets.hasStems ? '✓' : '—'}</span>
+      </div>
+      <div class="sc-action-row">
+        <a href="${s.assets && s.assets.driveUrl ? s.assets.driveUrl : '#'}" target="_blank" class="btn-drive">📁 Google Drive</a>
+        ${s.audioFile ? `<button class="btn-play-track" data-track-index="${idx}">Escuchar ▶</button>` : ''}
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  grid.querySelectorAll('.btn-play-track').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const idx = parseInt(e.target.dataset.trackIndex);
+      loadAndPlayTrack(idx);
+    });
+  });
+}
+
 function setupVideoPlayer() {
   const video = document.getElementById('officialVideoPlayer');
-  const quickBanner = document.getElementById('videoQuickPlayBanner');
-  const watchBtn = document.getElementById('watchVideoBtn');
-
   if (video) {
     video.addEventListener('play', () => {
-      // Pause audio if playing
       const audio = document.getElementById('audioElement');
       if (isPlaying && audio) {
         togglePlay();
       }
     });
   }
-
-  const navigateToVideo = () => {
-    // Switch to Media Tab
-    const mediaNavBtn = document.querySelector('.nav-item[data-tab="tab-media"]');
-    if (mediaNavBtn) mediaNavBtn.click();
-
-    setTimeout(() => {
-      const card = document.getElementById('officialVideoCard');
-      if (card) {
-        card.scrollIntoView({ behavior: 'smooth' });
-      }
-      if (video) {
-        video.play().catch(e => console.log('Video play triggered, user interaction handled'));
-      }
-    }, 250);
-  };
-
-  if (watchBtn) watchBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    navigateToVideo();
-  });
-
-  if (quickBanner) quickBanner.addEventListener('click', navigateToVideo);
 }
 
-// Countdown to Single 01
+// -------------------------------------------------------------
+// 7. TAB 5: AGENDA & LEGAL TIMELINE
+// -------------------------------------------------------------
+function renderTimeline(filter) {
+  const container = document.getElementById('timelineList');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const items = portalData.timeline || [];
+  const filtered = filter === 'all' ? items : items.filter(it => it.type === filter);
+
+  filtered.forEach(it => {
+    const card = document.createElement('div');
+    card.className = 'timeline-card';
+    card.innerHTML = `
+      <div class="tl-header">
+        <span class="tl-tag">${it.type}</span>
+        <span class="tl-date">${it.date}</span>
+      </div>
+      <div class="tl-title">${it.title}</div>
+      <div class="tl-desc">${it.desc}</div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// -------------------------------------------------------------
+// 8. NAVIGATION TABS CONTROLLER
+// -------------------------------------------------------------
+function setupNavigation() {
+  const navBtns = document.querySelectorAll('.bottom-nav .nav-item');
+  const panes = document.querySelectorAll('.tab-pane');
+
+  navBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      navBtns.forEach(b => b.classList.remove('active'));
+      panes.forEach(p => p.classList.remove('active'));
+
+      btn.classList.add('active');
+      const targetPane = document.getElementById(btn.dataset.tab);
+      if (targetPane) targetPane.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  // Timeline Filter Pills
+  document.querySelectorAll('.filter-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      renderTimeline(pill.dataset.filter);
+    });
+  });
+}
+
+// -------------------------------------------------------------
+// 9. FIREBASE CLOUD SYNC ADAPTER
+// -------------------------------------------------------------
+function setupFirebaseSync() {
+  const saveFbBtn = document.getElementById('saveFirebaseBtn');
+  const apiKeyInput = document.getElementById('fbApiKey');
+  const projectIdInput = document.getElementById('fbProjectId');
+  const statusDot = document.getElementById('syncStatusDot');
+  const syncBadge = document.getElementById('syncBadge');
+
+  const savedConfig = localStorage.getItem(FIREBASE_CONFIG_KEY);
+  if (savedConfig) {
+    try {
+      const cfg = JSON.parse(savedConfig);
+      if (apiKeyInput) apiKeyInput.value = cfg.apiKey || '';
+      if (projectIdInput) projectIdInput.value = cfg.projectId || '';
+      if (statusDot) {
+        statusDot.textContent = "Conectado";
+        statusDot.style.background = "rgba(0, 230, 118, 0.2)";
+        statusDot.style.color = "#00e676";
+      }
+      if (syncBadge) syncBadge.textContent = "● Nube Activa";
+    } catch (e) {}
+  }
+
+  if (saveFbBtn) {
+    saveFbBtn.addEventListener('click', () => {
+      const apiKey = apiKeyInput.value.trim();
+      const projectId = projectIdInput.value.trim();
+
+      if (!projectId) {
+        alert("Por favor ingresa al menos tu Project ID de Firebase.");
+        return;
+      }
+
+      const config = { apiKey, projectId };
+      localStorage.setItem(FIREBASE_CONFIG_KEY, JSON.stringify(config));
+      if (statusDot) {
+        statusDot.textContent = "Conectado";
+        statusDot.style.background = "rgba(0, 230, 118, 0.2)";
+        statusDot.style.color = "#00e676";
+      }
+      if (syncBadge) syncBadge.textContent = "● Nube Activa";
+      alert("¡Configuración guardada! Se sincronizarán las tareas e ideas en Firestore.");
+      syncToCloud({ tasks: portalData.tasks, songIdeas: portalData.songIdeas });
+    });
+  }
+}
+
+async function syncToCloud(payload) {
+  const savedConfig = localStorage.getItem(FIREBASE_CONFIG_KEY);
+  if (!savedConfig) return;
+
+  try {
+    const cfg = JSON.parse(savedConfig);
+    if (!cfg.projectId) return;
+
+    // Use Firestore REST API endpoint
+    const url = `https://firestore.googleapis.com/v1/projects/${cfg.projectId}/databases/(default)/documents/bandPortal/sharedData`;
+    
+    // Save as JSON string in document field
+    const firestoreBody = {
+      fields: {
+        payloadJson: { stringValue: JSON.stringify(payload) },
+        updatedAt: { stringValue: new Date().toISOString() }
+      }
+    };
+
+    const res = await fetch(url, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(firestoreBody)
+    });
+
+    if (res.ok) {
+      const syncBadge = document.getElementById('syncBadge');
+      if (syncBadge) syncBadge.textContent = "● Sincronizado";
+    }
+  } catch (err) {
+    console.log("Cloud sync notice:", err);
+  }
+}
+
+// -------------------------------------------------------------
+// 10. COUNTDOWN TIMER
+// -------------------------------------------------------------
 function startCountdown() {
   const targetDate = new Date('2026-10-23T00:00:00').getTime();
 
@@ -484,10 +1035,16 @@ function startCountdown() {
     const now = new Date().getTime();
     const diff = targetDate - now;
 
+    const daysEl = document.getElementById('cdDays');
+    const hoursEl = document.getElementById('cdHours');
+    const minsEl = document.getElementById('cdMins');
+
+    if (!daysEl || !hoursEl || !minsEl) return;
+
     if (diff <= 0) {
-      document.getElementById('cdDays').textContent = "00";
-      document.getElementById('cdHours').textContent = "00";
-      document.getElementById('cdMins').textContent = "00";
+      daysEl.textContent = "00";
+      hoursEl.textContent = "00";
+      minsEl.textContent = "00";
       return;
     }
 
@@ -495,19 +1052,30 @@ function startCountdown() {
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-    document.getElementById('cdDays').textContent = String(days).padStart(2, '0');
-    document.getElementById('cdHours').textContent = String(hours).padStart(2, '0');
-    document.getElementById('cdMins').textContent = String(mins).padStart(2, '0');
+    daysEl.textContent = String(days).padStart(2, '0');
+    hoursEl.textContent = String(hours).padStart(2, '0');
+    minsEl.textContent = String(mins).padStart(2, '0');
   }
 
   update();
   setInterval(update, 60000);
 }
 
+// Helper: Escape HTML
+function escapeHTML(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 // Service Worker Registration
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Reg failed', err));
+    navigator.serviceWorker.register('sw.js').catch(err => console.log('SW notice:', err));
   });
 }
 

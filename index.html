@@ -17,14 +17,19 @@
   <div id="authOverlay" class="auth-overlay">
     <div class="auth-card chrome-bezel">
       <div class="brand-logo-wrap">
-        <img src="images/1.png" alt="Black KNVRS Logo" class="auth-logo-img">
+        <img src="images/logo.png" alt="Black KNVRS Logo" class="auth-logo-img">
         <span class="logo-sub">PRIVATE BAND PORTAL</span>
         <h1 class="brand-title chrome-text">BLACK KNVRS</h1>
-        <p class="auth-tag">SELECCIONA TU PERFIL O INGRESA TU PIN</p>
+        <p class="auth-tag">SELECCIONA TU PERFIL E INGRESA TU PIN</p>
       </div>
 
       <div class="member-selector" id="memberButtons">
-        <!-- Rendered dynamically -->
+        <!-- Rendered dynamically (Luis Miguel + 5 Chicas) -->
+      </div>
+
+      <div class="selected-member-display" id="selectedMemberDisplay">
+        <span class="smd-name" id="smdName">Valeria / Pía</span>
+        <span class="smd-role" id="smdRole">Cantante / Compositora</span>
       </div>
 
       <div class="pin-input-section">
@@ -41,9 +46,9 @@
           <button class="key-btn" data-key="7">7</button>
           <button class="key-btn" data-key="8">8</button>
           <button class="key-btn" data-key="9">9</button>
-          <button class="key-btn clear" id="clearBtn">✕</button>
+          <button class="key-btn clear" id="clearBtn" title="Limpiar PIN">✕</button>
           <button class="key-btn" data-key="0">0</button>
-          <button class="key-btn bypass" id="bypassBtn">Entrar</button>
+          <button class="key-btn del-btn" id="delBtn" title="Borrar dígito">⌫</button>
         </div>
         <p id="authError" class="auth-error"></p>
       </div>
@@ -56,15 +61,21 @@
     <header class="top-nav chrome-border-bottom">
       <div class="brand-info">
         <div class="brand-title-flex">
-          <img src="images/1.png" alt="BK Logo" class="nav-mini-logo">
+          <img src="images/logo.png" alt="BK Logo" class="nav-mini-logo">
           <span class="nav-brand chrome-text">BLACK KNVRS</span>
         </div>
-        <span class="badge-era">ERA 1 // WATERFALL • CDMX</span>
+        <div class="sub-nav-flex">
+          <span class="badge-era">ERA 1 // WATERFALL</span>
+          <span class="sync-badge" id="syncBadge" title="Sincronización">● Local / Nube</span>
+        </div>
       </div>
       <div class="user-pill" id="userPill">
         <span class="member-dot" id="memberDot"></span>
-        <span class="member-active-name" id="memberActiveName">Pía</span>
-        <button class="switch-btn" id="switchUserBtn" title="Cambiar perfil">⇄</button>
+        <div class="member-meta-top">
+          <span class="member-active-name" id="memberActiveName">Pía</span>
+          <span class="member-active-tag" id="memberActiveTag">Cantante</span>
+        </div>
+        <button class="switch-btn" id="switchUserBtn" title="Cambiar perfil / Salir">⇄</button>
       </div>
     </header>
 
@@ -88,11 +99,11 @@
 
     <!-- Content Sections (Tab Controlled) -->
     <main class="main-content">
-      <!-- TAB 1: DASHBOARD -->
+      <!-- TAB 1: HOY / MI DASHBOARD -->
       <section id="tab-dashboard" class="tab-pane active">
         <div class="section-title-wrap">
-          <h4 class="chrome-text">DASHBOARD OPERATIVO</h4>
-          <span class="subtitle">Tareas asignadas, booking y contenidos</span>
+          <h4 class="chrome-text" id="dashGreeting">HOLA, PÍA</h4>
+          <span class="subtitle" id="dashSubtitle">Tus responsabilidades activas y fechas de entrega</span>
         </div>
 
         <!-- Band Photo Hero Feature (BKA-4) -->
@@ -109,11 +120,12 @@
             </div>
           </div>
           <div class="band-hero-caption">
-            <img src="images/1.png" alt="Black KNVRS" class="band-hero-logo">
+            <img src="images/logo.png" alt="Black KNVRS" class="band-hero-logo">
             <p>Alineación Oficial • Q4 2026</p>
           </div>
         </div>
 
+        <!-- Member Role Callout Card -->
         <div class="callout-card" id="myRoleCallout">
           <div class="role-header">
             <span class="role-badge" id="roleBadge">Cantante / Compositora</span>
@@ -122,98 +134,199 @@
           <p class="role-desc" id="roleDescription">Cargando...</p>
         </div>
 
-        <!-- Strategy Quick Alert -->
-        <div class="strategy-banner-card">
-          <div class="s-icon">⚡</div>
-          <div class="s-text">
-            <strong>Cadencia de Contenidos Octubre:</strong>
-            <p>2 semanas antes: Archivo de fotos semestrales + 2 videos cortos de la canción. Luego: 2 videos semanales.</p>
-          </div>
+        <!-- Section: Mis Responsabilidades Pendientes -->
+        <div class="section-sub-header">
+          <h5 class="subhead">MIS RESPONSABILIDADES PENDIENTES</h5>
+          <span class="task-count-badge" id="myTaskCount">0 pendientes</span>
         </div>
-
-        <!-- Video Alert Banner -->
-        <div class="video-alert-card chrome-panel" id="videoQuickPlayBanner">
-          <div class="vac-icon">🎬</div>
-          <div class="vac-content">
-            <span class="vac-badge">VIDEOCLIP OFICIAL DISPONIBLE</span>
-            <h5 class="vac-title">I LIKE 2 BE (Master 4K)</h5>
-            <p class="vac-sub">Corte oficial listo para revisión. Toca para reproducir.</p>
-          </div>
-          <button class="vac-btn" id="watchVideoBtn">Ver ▶</button>
-        </div>
-
-        <h5 class="subhead">MIS TAREAS PENDIENTES</h5>
         <div class="task-list" id="myTaskList">
-          <!-- Dynamically filled -->
+          <!-- Dynamically populated -->
         </div>
 
-        <h5 class="subhead" style="margin-top: 1.5rem;">HITOS CRÍTICOS PRÓXIMOS</h5>
+        <!-- Completed Responsibilities Drawer / Section -->
+        <div class="completed-section" id="myCompletedSection">
+          <button class="completed-toggle-btn" id="toggleCompletedBtn">
+            <span>Tareas Completadas (<span id="completedCount">0</span>)</span>
+            <span class="caret-icon">▼</span>
+          </button>
+          <div class="completed-task-list hidden" id="completedTaskList">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Quick Milestones -->
+        <h5 class="subhead" style="margin-top: 1.8rem;">HITOS CRÍTICOS PRÓXIMOS</h5>
         <div class="quick-milestones" id="quickMilestones">
-          <!-- Dynamically filled -->
+          <!-- Dynamically populated -->
         </div>
       </section>
 
-      <!-- TAB 2: CALENDARIO / ROADMAP -->
-      <section id="tab-calendar" class="tab-pane">
+      <!-- TAB 2: GESTIÓN DE TAREAS (ADMIN & EQUIPO) -->
+      <section id="tab-tasks" class="tab-pane">
         <div class="section-title-wrap">
-          <h4 class="chrome-text">CRONOGRAMA & BOOKING CDMX</h4>
-          <span class="subtitle">Lanzamientos, rodajes, focus group y shows</span>
-        </div>
-
-        <div class="timeline-filters">
-          <button class="filter-pill active" data-filter="all">Todos</button>
-          <button class="filter-pill" data-filter="release">Releases</button>
-          <button class="filter-pill" data-filter="video">Videoclip</button>
-          <button class="filter-pill" data-filter="live">Shows CDMX</button>
-          <button class="filter-pill" data-filter="songwriting">Songwriting</button>
-        </div>
-
-        <div class="timeline-container" id="timelineList">
-          <!-- Dynamically filled -->
-        </div>
-      </section>
-
-      <!-- TAB 3: MEDIA & ASSETS HUB -->
-      <section id="tab-media" class="tab-pane">
-        <div class="section-title-wrap">
-          <h4 class="chrome-text">MEDIA & ASSETS HUB</h4>
-          <span class="subtitle">Carpetas, videoclips, portadas, stems y renders</span>
-        </div>
-
-        <!-- Official Music Video Showcase Feature -->
-        <div class="video-feature-card chrome-panel" id="officialVideoCard">
-          <div class="video-header">
-            <span class="vh-badge">VIDEOCLIP OFICIAL // CORTE 4K</span>
-            <span class="vh-meta">Master UHD 3840x2160</span>
-          </div>
-          <div class="video-player-wrapper">
-            <video id="officialVideoPlayer" controls playsinline preload="metadata" poster="images/band-hero.jpg">
-              <source src="videos/video-web.mp4" type="video/mp4">
-              <source src="videos/BK2.mov" type="video/quicktime">
-              Tu navegador no soporta reproducción directa de este archivo de video.
-            </video>
-          </div>
-          <div class="video-info-footer">
-            <div class="vif-left">
-              <h4 class="vif-title">I LIKE 2 BE (Cover Bruses)</h4>
-              <p class="vif-sub">Corte Oficial • Estreno Concierto 23 de Octubre</p>
+          <div class="title-with-action">
+            <div>
+              <h4 class="chrome-text">GESTIÓN DE TAREAS</h4>
+              <span class="subtitle">Asignación, fechas de entrega y responsabilidades</span>
             </div>
-            <a href="videos/BK2.mov" download="Black_KNVRS_I_LIKE_2_BE_Official_Video_4K.mov" class="vif-btn-dl">Descargar 4K 📥</a>
+            <button class="btn-action-primary hidden" id="openNewTaskBtn">+ Asignar Tarea</button>
           </div>
         </div>
 
-        <div class="singles-grid" id="singlesGrid">
-          <!-- Dynamically filled -->
+        <!-- Admin Task Creator Card (Visible to Luis Miguel or opened by modal) -->
+        <div class="admin-task-card chrome-panel hidden" id="adminTaskFormCard">
+          <div class="atc-header">
+            <span class="atc-tag">PANEL DE MANAGER // ASIGNACIÓN</span>
+            <button class="atc-close" id="closeTaskFormBtn">✕</button>
+          </div>
+          <form id="createTaskForm" class="task-form">
+            <div class="form-row">
+              <label for="taskAssignee">Asignar a:</label>
+              <select id="taskAssignee" class="form-input" required>
+                <option value="all">Todas (Banda Completa)</option>
+                <option value="pia">Valeria / Pía (Voz)</option>
+                <option value="adri">Adri (Bajo)</option>
+                <option value="kar">Kar (Guitarra)</option>
+                <option value="maff">Maff (Batería)</option>
+                <option value="dani">Dani (Guitarra)</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <label for="taskTitle">Título de la tarea:</label>
+              <input type="text" id="taskTitle" class="form-input" placeholder="Ej. Grabar 2 videos de TikTok cantando verso" required>
+            </div>
+
+            <div class="form-row">
+              <label for="taskDesc">Instrucciones / Entregables:</label>
+              <textarea id="taskDesc" class="form-textarea" rows="2" placeholder="Detalles de la entrega, formato, consideraciones..."></textarea>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-row">
+                <label for="taskDueDate">Fecha de entrega:</label>
+                <input type="date" id="taskDueDate" class="form-input" required>
+              </div>
+              <div class="form-row">
+                <label for="taskPriority">Prioridad:</label>
+                <select id="taskPriority" class="form-input">
+                  <option value="Crítica">🚨 Crítica</option>
+                  <option value="Alta" selected>⚡ Alta</option>
+                  <option value="Media">📌 Media</option>
+                  <option value="Baja">☕ Baja</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label for="taskCategory">Categoría:</label>
+              <select id="taskCategory" class="form-input">
+                <option value="Visual">Visual & Fotos</option>
+                <option value="Redes">Redes & Contenido</option>
+                <option value="Show">Concierto / En vivo</option>
+                <option value="Videoclip">Videoclip</option>
+                <option value="Producción">Producción & Backline</option>
+                <option value="Composición">Composición / Ensayo</option>
+                <option value="Legal">Legal & Finanzas</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn-submit-task" id="saveTaskBtn">⚡ Guardar y Asignar Responsabilidad</button>
+          </form>
+        </div>
+
+        <!-- Filter Pills by Member -->
+        <div class="tasks-filter-bar">
+          <div class="member-filter-scroll" id="tasksMemberFilters">
+            <button class="t-filter-btn active" data-member="all">Todas</button>
+            <button class="t-filter-btn" data-member="pia">Pía</button>
+            <button class="t-filter-btn" data-member="adri">Adri</button>
+            <button class="t-filter-btn" data-member="kar">Kar</button>
+            <button class="t-filter-btn" data-member="maff">Maff</button>
+            <button class="t-filter-btn" data-member="dani">Dani</button>
+          </div>
+        </div>
+
+        <!-- Task List Container -->
+        <div class="tasks-global-list" id="tasksGlobalList">
+          <!-- Dynamically populated -->
         </div>
       </section>
 
-      <!-- TAB 4: AUDIO VAULT / PLAYER -->
+      <!-- TAB 3: IDEAS DE CANCIONES (LABORATORIO) -->
+      <section id="tab-ideas" class="tab-pane">
+        <div class="section-title-wrap">
+          <div class="title-with-action">
+            <div>
+              <h4 class="chrome-text">SONG IDEAS HUB</h4>
+              <span class="subtitle">Bocetos, demos, letras, acordes y feedback del equipo</span>
+            </div>
+            <button class="btn-action-primary" id="openNewIdeaBtn">+ Subir Idea</button>
+          </div>
+        </div>
+
+        <!-- New Song Idea Form Card (Collapsible) -->
+        <div class="new-idea-card chrome-panel hidden" id="newIdeaFormCard">
+          <div class="atc-header">
+            <span class="atc-tag">NUEVA IDEA DE CANCIÓN</span>
+            <button class="atc-close" id="closeIdeaFormBtn">✕</button>
+          </div>
+          <form id="createIdeaForm" class="task-form">
+            <div class="form-row">
+              <label for="ideaTitle">Título de la Idea / Boceto:</label>
+              <input type="text" id="ideaTitle" class="form-input" placeholder="Ej. Riff Coro Punk / Melodía en Re menor" required>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-row">
+                <label for="ideaKey">Tonalidad (opcional):</label>
+                <input type="text" id="ideaKey" class="form-input" placeholder="Ej. D menor / C mayor">
+              </div>
+              <div class="form-row">
+                <label for="ideaBpm">Tempo BPM (opcional):</label>
+                <input type="text" id="ideaBpm" class="form-input" placeholder="Ej. 165 BPM">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label for="ideaAudioFile">Subir archivo de audio (MP3 / M4A / WAV):</label>
+              <input type="file" id="ideaAudioFile" accept="audio/*" class="form-file-input">
+              <small class="file-hint">Puedes subir tu demo directo desde el celular o computadora.</small>
+            </div>
+
+            <div class="form-row">
+              <label for="ideaDriveUrl">O enlace externo (Google Drive / SoundCloud / Dropbox):</label>
+              <input type="url" id="ideaDriveUrl" class="form-input" placeholder="https://drive.google.com/...">
+            </div>
+
+            <div class="form-row">
+              <label for="ideaLyrics">Letra / Acordes / Tablatura:</label>
+              <textarea id="ideaLyrics" class="form-textarea" rows="4" placeholder="Pega aquí la letra, acordes o estructura..."></textarea>
+            </div>
+
+            <div class="form-row">
+              <label for="ideaNotes">Notas de Producción / Arreglos:</label>
+              <textarea id="ideaNotes" class="form-textarea" rows="2" placeholder="Ideas de qué instrumentos entran, cambios de ritmo, etc."></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit-task" id="saveIdeaBtn">🚀 Publicar Idea en el Laboratorio</button>
+          </form>
+        </div>
+
+        <!-- Song Ideas Stream -->
+        <div class="ideas-stream" id="ideasStream">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- TAB 4: MÚSICA & ASSETS HUB -->
       <section id="tab-player" class="tab-pane">
         <div class="section-title-wrap">
-          <h4 class="chrome-text">AUDIO VAULT // 7 TRACKS</h4>
-          <span class="subtitle">Singles masterizados + Nuevas maquetas de Adri & Kar</span>
+          <h4 class="chrome-text">MÚSICA // AUDIO VAULT</h4>
+          <span class="subtitle">Singles oficiales, masters y reproductor Y2K</span>
         </div>
 
+        <!-- Vinyl Player Card -->
         <div class="player-card chrome-panel">
           <div class="player-art">
             <div class="vinyl-disc" id="vinylDisc">
@@ -240,29 +353,69 @@
           <audio id="audioElement" preload="metadata"></audio>
         </div>
 
-        <h5 class="subhead" style="margin-top: 1.5rem;">CATÁLOGO & MAQUETAS EN PROCESO</h5>
+        <!-- Official Music Video Showcase Feature -->
+        <div class="video-feature-card chrome-panel" id="officialVideoCard">
+          <div class="video-header">
+            <span class="vh-badge">VIDEOCLIP OFICIAL // REVISIÓN</span>
+            <span class="vh-meta">Master Web</span>
+          </div>
+          <div class="video-player-wrapper">
+            <video id="officialVideoPlayer" controls playsinline preload="metadata" poster="images/band-hero.jpg">
+              <source src="videos/video-web.mp4" type="video/mp4">
+              Tu navegador no soporta reproducción directa de video.
+            </video>
+          </div>
+          <div class="video-info-footer">
+            <div class="vif-left">
+              <h4 class="vif-title">I LIKE 2 BE (Cover Bruses)</h4>
+              <p class="vif-sub">Corte Oficial • Estreno Concierto 23 de Octubre</p>
+            </div>
+            <a href="https://drive.google.com/drive/folders/blackknvrs-ilike2be" target="_blank" class="vif-btn-dl">Carpeta Drive 📁</a>
+          </div>
+        </div>
+
+        <h5 class="subhead" style="margin-top: 1.5rem;">CATÁLOGO DE DISCOGRAFÍA</h5>
         <div class="track-list" id="trackList">
+          <!-- Dynamically filled -->
+        </div>
+
+        <h5 class="subhead" style="margin-top: 1.8rem;">CARPETAS DE ENTREGABLES & STEMS</h5>
+        <div class="singles-grid" id="singlesGrid">
           <!-- Dynamically filled -->
         </div>
       </section>
 
-      <!-- TAB 5: LEGAL & PRESS KIT -->
+      <!-- TAB 5: AGENDA & LEGAL -->
       <section id="tab-legal" class="tab-pane">
         <div class="section-title-wrap">
-          <h4 class="chrome-text">LEGAL, EPK & RIDER</h4>
-          <span class="subtitle">Convenio, splits, stage plot de CDMX y "La Caja"</span>
+          <h4 class="chrome-text">CRONOGRAMA & LEGAL CDMX</h4>
+          <span class="subtitle">Lanzamientos, shows, splits y convenio vigente</span>
         </div>
 
+        <!-- Timeline Filters -->
+        <div class="timeline-filters">
+          <button class="filter-pill active" data-filter="all">Todos</button>
+          <button class="filter-pill" data-filter="release">Releases</button>
+          <button class="filter-pill" data-filter="video">Videoclip</button>
+          <button class="filter-pill" data-filter="live">Shows CDMX</button>
+          <button class="filter-pill" data-filter="songwriting">Songwriting</button>
+        </div>
+
+        <div class="timeline-container" id="timelineList">
+          <!-- Dynamically filled -->
+        </div>
+
+        <h5 class="subhead" style="margin-top: 2rem;">SPLITS & ESTATUTOS LEGALES</h5>
         <div class="legal-summary-cards">
           <div class="legal-stat">
             <span class="stat-number">50 / 50</span>
             <span class="stat-label">FONOGRAMAS (MASTER)</span>
-            <small>50% Productores / 50% Banda (Morac)</small>
+            <small>50% Productores / 50% Banda</small>
           </div>
           <div class="legal-stat">
             <span class="stat-number">100%</span>
             <span class="stat-label">COMPOSICIÓN (OBRA)</span>
-            <small>100% Autoras (INDAUTOR / Split Sheets)</small>
+            <small>100% Autoras (INDAUTOR / SACM)</small>
           </div>
           <div class="legal-stat">
             <span class="stat-number">50 / 50</span>
@@ -272,7 +425,7 @@
           <div class="legal-stat">
             <span class="stat-number">20%</span>
             <span class="stat-label">BOOKING EN VIVO</span>
-            <small>Comisión sólo sobre utilidad neta gestionada</small>
+            <small>Comisión sobre utilidad neta gestionada</small>
           </div>
         </div>
 
@@ -283,7 +436,7 @@
             <h5>Technical Rider & Stage Plot (CDMX)</h5>
             <p>Pía (Voz), Adri (Bajo), Dani & Kar (Guitarras), Maff (Batería)</p>
           </div>
-          <span class="doc-badge-status">Listo Sep 30</span>
+          <span class="doc-badge-status">Listo</span>
         </div>
 
         <div class="doc-download-card">
@@ -295,30 +448,25 @@
           <a href="docs/convenio.pdf" target="_blank" class="doc-btn">Ver PDF</a>
         </div>
 
-        <div class="doc-download-card">
-          <div class="doc-icon">🎯</div>
-          <div class="doc-info">
-            <h5>Guión Técnico: Focus Group & Listening Party</h5>
-            <p>Muestra presencial Fans 16-22 años • Sábado 05 Dic</p>
-          </div>
-          <a href="docs/focus-group.pdf" target="_blank" class="doc-btn">Ver PDF</a>
-        </div>
-
         <div class="caja-card">
           <div class="caja-header">
             <h5>FONDO COMÚN ("LA CAJA")</h5>
             <span class="caja-balance">$350 MXN</span>
           </div>
-          <p class="caja-desc">Aportación voluntaria ($50 MXN) por impuntualidad para insumos de estudio. Administrado por Maff.</p>
-          <div class="caja-log">
-            <div class="caja-item">
-              <span>Ensayo 18 Sep - Retardo justificado</span>
-              <span class="caja-tag ok">Exento</span>
-            </div>
-            <div class="caja-item">
-              <span>Ensayo 21 Sep - Fondo acumulado</span>
-              <span class="caja-tag in">+$50 MXN</span>
-            </div>
+          <p class="caja-desc">Aportación voluntaria ($50 MXN) por impuntualidad para insumos de estudio. Tesorería: Maff.</p>
+        </div>
+
+        <!-- Firebase Sync Settings Collapsible Modal/Card -->
+        <div class="sync-settings-card chrome-panel" style="margin-top: 1.5rem;">
+          <div class="caja-header">
+            <h5>CONEXIÓN EN LA NUBE // FIREBASE</h5>
+            <span class="sync-status-dot" id="syncStatusDot">Local</span>
+          </div>
+          <p class="caja-desc">Ingresa las credenciales de Firebase Firestore para sincronización instantánea en vivo entre todos los dispositivos.</p>
+          <div class="firebase-inputs" id="firebaseConfigBox">
+            <input type="text" id="fbApiKey" class="form-input" placeholder="Firebase API Key (opcional)" style="margin-bottom: 0.5rem; font-size: 0.72rem;">
+            <input type="text" id="fbProjectId" class="form-input" placeholder="Firebase Project ID" style="margin-bottom: 0.5rem; font-size: 0.72rem;">
+            <button class="btn-drive" id="saveFirebaseBtn" style="width: 100%; border-radius: 8px;">Conectar Nube ⚡</button>
           </div>
         </div>
       </section>
@@ -330,21 +478,21 @@
         <span class="nav-icon">⚡</span>
         <span class="nav-label">Hoy</span>
       </button>
-      <button class="nav-item" data-tab="tab-calendar">
-        <span class="nav-icon">📅</span>
-        <span class="nav-label">Fechas</span>
+      <button class="nav-item" data-tab="tab-tasks">
+        <span class="nav-icon">📋</span>
+        <span class="nav-label">Tareas</span>
       </button>
-      <button class="nav-item" data-tab="tab-media">
-        <span class="nav-icon">📁</span>
-        <span class="nav-label">Assets</span>
+      <button class="nav-item" data-tab="tab-ideas">
+        <span class="nav-icon">💡</span>
+        <span class="nav-label">Ideas</span>
       </button>
       <button class="nav-item" data-tab="tab-player">
         <span class="nav-icon">🎵</span>
-        <span class="nav-label">Player</span>
+        <span class="nav-label">Música</span>
       </button>
       <button class="nav-item" data-tab="tab-legal">
         <span class="nav-icon">⚖️</span>
-        <span class="nav-label">EPK/Legal</span>
+        <span class="nav-label">Legal</span>
       </button>
     </nav>
   </div>

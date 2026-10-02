@@ -1,10 +1,17 @@
-const CACHE_NAME = 'bk-portal-v1';
+const CACHE_NAME = 'bk-portal-v2';
 const ASSETS_TO_CACHE = [
   'index.html',
   'style.css',
   'app.js',
   'data/portal-data.json',
-  'manifest.json'
+  'manifest.json',
+  'images/logo.png',
+  'images/band-hero.jpg',
+  'images/pia.png',
+  'images/adri.png',
+  'images/kar.png',
+  'images/maff.png',
+  'images/dani.png'
 ];
 
 self.addEventListener('install', event => {
