@@ -21,7 +21,44 @@
       "pin": "2026",
       "avatar": "images/logo.png",
       "operationalRole": "Dirección operativa general, producción musical, asignación de tareas, seguimiento de entregas y estrategia CDMX.",
-      "isAdmin": true
+      "isAdmin": true,
+      "category": "crew"
+    },
+    {
+      "id": "pavel",
+      "name": "Pavel Guerra",
+      "fullName": "Pavel Guerra",
+      "role": "Video Producer",
+      "color": "#FF6B00",
+      "pin": "2027",
+      "avatar": "images/logo.png",
+      "operationalRole": "Producción audiovisual, dirección de videoclips oficiales, sesiones fotográficas de prensa y estética visual.",
+      "isAdmin": true,
+      "category": "crew"
+    },
+    {
+      "id": "edgar",
+      "name": "Edgar",
+      "fullName": "Edgar",
+      "role": "World Builder",
+      "color": "#00F0FF",
+      "pin": "2028",
+      "avatar": "images/logo.png",
+      "operationalRole": "Construcción de universo narrativo y lore de Black KNVRS, dirección de arte, estética transmedia y branding de la era.",
+      "isAdmin": true,
+      "category": "crew"
+    },
+    {
+      "id": "steph",
+      "name": "Steph",
+      "fullName": "Steph",
+      "role": "Assistant Manager",
+      "color": "#F9CA24",
+      "pin": "2029",
+      "avatar": "images/logo.png",
+      "operationalRole": "Asistencia de management, coordinación logística de ensayos, scouting y enlace con foros indie en CDMX.",
+      "isAdmin": true,
+      "category": "crew"
     },
     {
       "id": "pia",
@@ -32,7 +69,8 @@
       "pin": "1001",
       "avatar": "images/pia.png",
       "operationalRole": "Voz principal, composición lírica, vocería oficial en medios y curaduría de fotos semestrales.",
-      "isAdmin": false
+      "isAdmin": false,
+      "category": "band"
     },
     {
       "id": "adri",
@@ -43,7 +81,8 @@
       "pin": "1002",
       "avatar": "images/adri.png",
       "operationalRole": "Líneas de bajo, groove melódico, co-composición y propuesta visual de estilismo.",
-      "isAdmin": false
+      "isAdmin": false,
+      "category": "band"
     },
     {
       "id": "kar",
@@ -53,8 +92,9 @@
       "color": "#0070F3",
       "pin": "1003",
       "avatar": "images/kar.png",
-      "operationalRole": "Guitarras rítmicas, arreglos armónicos, disciplina de ensayos y prospección de foros CDMX con Stef.",
-      "isAdmin": false
+      "operationalRole": "Guitarras rítmicas, arreglos armónicos, disciplina de ensayos y prospección de foros CDMX.",
+      "isAdmin": false,
+      "category": "band"
     },
     {
       "id": "maff",
@@ -65,7 +105,8 @@
       "pin": "1004",
       "avatar": "images/maff.png",
       "operationalRole": "Dirección rítmica de batería, co-composición, redacción de copies y administración de 'La Caja'.",
-      "isAdmin": false
+      "isAdmin": false,
+      "category": "band"
     },
     {
       "id": "dani",
@@ -76,7 +117,94 @@
       "pin": "1005",
       "avatar": "images/dani.png",
       "operationalRole": "Guitarras líderes, arreglos armónicos y supervisión de backline técnico.",
-      "isAdmin": false
+      "isAdmin": false,
+      "category": "band"
+    }
+  ],
+  "timeline": [
+    {
+      "id": "tl-1",
+      "type": "release",
+      "date": "2026-10-01",
+      "title": "Sesión de Fotos Oficial & Post Grupal",
+      "desc": "Lanzamiento de foto grupal por Pavel Guerra y arranque de posts individuales colaborativos cada 2 días."
+    },
+    {
+      "id": "tl-2",
+      "type": "live",
+      "date": "2026-10-05",
+      "title": "Anuncio Oficial del Show del 23 de Octubre",
+      "desc": "Publicación del flyer y fecha del concierto de estreno en CDMX."
+    },
+    {
+      "id": "tl-3",
+      "type": "release",
+      "date": "2026-10-12",
+      "title": "Activación TikTok & YouTube Oficial",
+      "desc": "Lanzamiento de contenido de estudio con correo de contacto institucional."
+    },
+    {
+      "id": "tl-4",
+      "type": "release",
+      "date": "2026-10-20",
+      "title": "Video de Grabación de 'I LIKE 2 BE'",
+      "desc": "Publicación del making-of del tema en TikTok / Reels."
+    },
+    {
+      "id": "tl-5",
+      "type": "release",
+      "date": "2026-10-21",
+      "title": "Teaser Oficial 'I LIKE 2 BE'",
+      "desc": "Publicación del soundbite oficial a 48 horas del concierto."
+    },
+    {
+      "id": "tl-6",
+      "type": "live",
+      "date": "2026-10-23",
+      "title": "CONCIERTO EN VIVO + Estreno Oficial 'I LIKE 2 BE'",
+      "desc": "Estreno del tema en vivo durante el show y publicación simultánea del videoclip en YouTube."
+    },
+    {
+      "id": "tl-7",
+      "type": "video",
+      "date": "2026-11-07",
+      "title": "Rodaje Videoclip 'Electricidad' (Break Room)",
+      "desc": "Grabación en Break Room / Set LED dirigida por Pavel Guerra. Concepto por Edgar."
+    },
+    {
+      "id": "tl-8",
+      "type": "songwriting",
+      "date": "2026-11-15",
+      "title": "Talleres de Composición & Demos EP 2 (CDMX/Puebla)",
+      "desc": "Composición de bases punk con Kar y Pillo posterior al show de octubre, con firma de split sheet."
+    },
+    {
+      "id": "tl-9",
+      "type": "live",
+      "date": "2026-12-05",
+      "title": "Secret Listening Session & Focus Group Presencial",
+      "desc": "Escucha privada con muestra de 10-15 morras antes de vacaciones de invierno."
+    },
+    {
+      "id": "tl-10",
+      "type": "release",
+      "date": "2027-01-22",
+      "title": "Estreno Oficial Single 01: 'Electricidad'",
+      "desc": "Single Debut Oficial en Spotify / Apple Music + Videoclip Oficial en YouTube."
+    },
+    {
+      "id": "tl-11",
+      "type": "release",
+      "date": "2027-03-05",
+      "title": "Estreno Oficial Single 02: 'Un Aplauso Para Ti'",
+      "desc": "Lanzamiento Waterfall en Spotify con arrastre del single Electricidad."
+    },
+    {
+      "id": "tl-12",
+      "type": "release",
+      "date": "2027-04-23",
+      "title": "Estreno Single 03: 'Si Fuera Yo' + Debut EP Waterfall",
+      "desc": "Cierre de era con el Debut EP compilatorio y showcase exclusivo en CDMX."
     }
   ],
   "singles": [
@@ -271,7 +399,7 @@
       "id": "t5",
       "title": "Scouting y contacto con foros indie en CDMX",
       "description": "Prospectar opciones de foros (Bajo Circuito, Multiforo 246, etc.) con aforo de 80-150 personas.",
-      "assignedTo": "kar",
+      "assignedTo": "steph",
       "dueDate": "2026-10-25",
       "priority": "Media",
       "status": "Pendiente",
@@ -314,12 +442,23 @@
     {
       "id": "t9",
       "title": "Grabación de videoclip oficial 'Electricidad' (Break Room)",
-      "description": "Call time 08:00 hrs. Rodaje completo de secuencias de furia y set LED.",
-      "assignedTo": "all",
+      "description": "Call time 08:00 hrs. Rodaje completo de secuencias de furia y set LED bajo la dirección de Pavel Guerra.",
+      "assignedTo": "pavel",
       "dueDate": "2026-11-07",
       "priority": "Crítica",
       "status": "Pendiente",
       "category": "Videoclip",
+      "assignedBy": "Luis Miguel"
+    },
+    {
+      "id": "t10",
+      "title": "Desarrollo del Lore y Universo Visual Era 1: Waterfall",
+      "description": "Creación del documento de estética, simbolismos y elementos narrativos del EP.",
+      "assignedTo": "edgar",
+      "dueDate": "2026-10-15",
+      "priority": "Alta",
+      "status": "Pendiente",
+      "category": "Visual",
       "assignedBy": "Luis Miguel"
     }
   ],

@@ -1,5 +1,5 @@
-// BLACK KNVRS // Band Portal Controller (Y2K Chrome Edition v2)
-// Full Operations: Auth, Task Management, Song Ideas Hub, Audio Vault & Real-Time Sync
+// BLACK KNVRS // Band Portal Controller (Y2K Chrome Edition v2.1)
+// Operations: Auth (Banda + Crew), Task Assignment, Due Date Editing, Song Ideas Hub, Timeline Events & Real-Time Sync
 
 let portalData = null;
 let currentMember = null;
@@ -21,6 +21,7 @@ async function initApp() {
   setupNavigation();
   setupTaskManagement();
   setupSongIdeas();
+  setupTimelineManagement();
   setupAudioPlayer();
   setupVideoPlayer();
   setupFirebaseSync();
@@ -48,11 +49,11 @@ async function loadPortalData() {
       if (localSaved) {
         try {
           const parsed = JSON.parse(localSaved);
-          // Merge remote base with user added tasks & ideas
           portalData = {
             ...defaultData,
             tasks: parsed.tasks || defaultData.tasks,
-            songIdeas: parsed.songIdeas || defaultData.songIdeas || []
+            songIdeas: parsed.songIdeas || defaultData.songIdeas || [],
+            timeline: parsed.timeline || defaultData.timeline || []
           };
         } catch (err) {
           console.warn("Error parsing local data, using default:", err);
@@ -71,7 +72,8 @@ function saveData() {
   if (!portalData) return;
   const toSave = {
     tasks: portalData.tasks,
-    songIdeas: portalData.songIdeas
+    songIdeas: portalData.songIdeas,
+    timeline: portalData.timeline
   };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
 
@@ -80,29 +82,31 @@ function saveData() {
 }
 
 // -------------------------------------------------------------
-// 2. AUTHENTICATION & PIN SECURITY
+// 2. AUTHENTICATION & PIN SECURITY (BANDA & CREW)
 // -------------------------------------------------------------
 function setupAuthUI() {
-  const memberContainer = document.getElementById('memberButtons');
-  if (!memberContainer || !portalData.members) return;
+  const bandContainer = document.getElementById('bandMemberButtons');
+  const crewContainer = document.getElementById('crewMemberButtons');
+  if (!portalData.members) return;
 
-  memberContainer.innerHTML = '';
+  if (bandContainer) bandContainer.innerHTML = '';
+  if (crewContainer) crewContainer.innerHTML = '';
 
-  portalData.members.forEach((m, idx) => {
-    const chip = document.createElement('div');
-    chip.className = `member-chip ${idx === 0 ? 'selected' : ''}`;
-    chip.style.setProperty('--chip-color', m.color || '#fff');
-    chip.dataset.memberId = m.id;
-    chip.innerHTML = `
-      <img src="${m.avatar || 'images/logo.png'}" onerror="this.src='images/logo.png'" class="chip-avatar-img">
-      <span class="chip-name">${m.name.split('/')[0].trim()}</span>
-    `;
-    chip.addEventListener('click', () => selectMember(m.id));
-    memberContainer.appendChild(chip);
+  const bandMembers = portalData.members.filter(m => m.category === 'band');
+  const crewMembers = portalData.members.filter(m => m.category === 'crew');
+
+  // Render Band Members
+  bandMembers.forEach((m) => {
+    if (bandContainer) bandContainer.appendChild(createMemberChip(m));
   });
 
-  // Default to first member
-  currentMember = portalData.members[0];
+  // Render Crew Members
+  crewMembers.forEach((m) => {
+    if (crewContainer) crewContainer.appendChild(createMemberChip(m));
+  });
+
+  // Default to first member (Pía or Luis Miguel)
+  currentMember = bandMembers[0] || portalData.members[0];
   updateAccentColor(currentMember.color);
   updateSelectedMemberDisplay(currentMember);
 
@@ -165,6 +169,19 @@ function setupAuthUI() {
     }
   }
 
+  function createMemberChip(m) {
+    const chip = document.createElement('div');
+    chip.className = `member-chip ${currentMember && currentMember.id === m.id ? 'selected' : ''}`;
+    chip.style.setProperty('--chip-color', m.color || '#fff');
+    chip.dataset.memberId = m.id;
+    chip.innerHTML = `
+      <img src="${m.avatar || 'images/logo.png'}" onerror="this.src='images/logo.png'" class="chip-avatar-img">
+      <span class="chip-name">${m.name.split('/')[0].trim()}</span>
+    `;
+    chip.addEventListener('click', () => selectMember(m.id));
+    return chip;
+  }
+
   function selectMember(id) {
     currentMember = portalData.members.find(m => m.id === id);
     document.querySelectorAll('.member-chip').forEach(c => {
@@ -222,7 +239,7 @@ function renderTopNav() {
   const dotEl = document.getElementById('memberDot');
 
   if (nameEl) nameEl.textContent = currentMember.name.split('/')[0].trim();
-  if (tagEl) tagEl.textContent = currentMember.isAdmin ? "Manager" : "Banda";
+  if (tagEl) tagEl.textContent = currentMember.role.split('/')[0].trim();
   if (dotEl) dotEl.style.background = currentMember.color || '#fff';
 }
 
@@ -240,15 +257,12 @@ function renderDashboard() {
   }
   if (subtitleEl) {
     subtitleEl.textContent = currentMember.isAdmin 
-      ? "Centro de Mando: Asignación de tareas y supervisión general" 
+      ? `Operaciones & Producción (${currentMember.role}): Asignación y seguimiento` 
       : "Tus responsabilidades asignadas y próximas fechas de entrega";
   }
   if (roleBadge) roleBadge.textContent = currentMember.role;
   if (roleDesc) roleDesc.textContent = currentMember.operationalRole;
 
-  // Filter tasks for this user:
-  // If Manager: show all pending tasks across the band
-  // If Member: show tasks assigned to this member or to 'all'
   const taskListEl = document.getElementById('myTaskList');
   const countBadge = document.getElementById('myTaskCount');
   const completedListEl = document.getElementById('completedTaskList');
@@ -259,9 +273,15 @@ function renderDashboard() {
   if (completedListEl) completedListEl.innerHTML = '';
 
   const relevantTasks = portalData.tasks.filter(t => {
-    if (currentMember.isAdmin) return true;
-    return t.assignedTo.toLowerCase() === currentMember.id.toLowerCase() || 
-           t.assignedTo.toLowerCase() === 'all';
+    if (currentMember.id === 'luis') return true; // Luis Miguel sees all
+    const target = (t.assignedTo || '').toLowerCase();
+    const myId = currentMember.id.toLowerCase();
+    
+    if (target === myId) return true;
+    if (target === 'team') return true;
+    if (currentMember.category === 'band' && target === 'all') return true;
+    if (currentMember.category === 'crew' && target === 'crew') return true;
+    return false;
   });
 
   const pendingTasks = relevantTasks.filter(t => t.status !== 'Completada');
@@ -274,7 +294,7 @@ function renderDashboard() {
     taskListEl.innerHTML = `
       <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:1rem; text-align:center;">
         <span style="font-size:1.5rem;">✨</span>
-        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.3rem;">¡Todo al día! No tienes responsabilidades pendientes.</p>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.3rem;">¡Todo al día! No hay tareas pendientes en este perfil.</p>
       </div>
     `;
   } else {
@@ -310,7 +330,7 @@ function renderDashboard() {
       const row = document.createElement('div');
       row.className = 'milestone-item';
       row.innerHTML = `
-        <span>${m.title}</span>
+        <span>${escapeHTML(m.title)}</span>
         <span class="m-date">${m.date}</span>
       `;
       milestonesEl.appendChild(row);
@@ -324,7 +344,10 @@ function calculateDueStatus(dueDateStr) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const [y, m, d] = dueDateStr.split('-').map(Number);
+  const parts = dueDateStr.split('-');
+  if (parts.length < 3) return { text: dueDateStr, className: "due-normal" };
+
+  const [y, m, d] = parts.map(Number);
   const due = new Date(y, m - 1, d);
   due.setHours(0, 0, 0, 0);
 
@@ -361,24 +384,65 @@ function createTaskElement(task, isCompleted) {
         <div class="task-title">${escapeHTML(task.title)}</div>
         ${task.description ? `<p class="task-desc">${escapeHTML(task.description)}</p>` : ''}
         <div class="task-meta-bar">
-          <span class="due-badge ${dueInfo.className}">📅 ${dueInfo.text}</span>
+          <span class="due-badge ${dueInfo.className}" title="Clic para cambiar fecha">📅 ${dueInfo.text}</span>
           <span class="task-badge ${priorityClass}">Prioridad: ${task.priority || 'Normal'}</span>
           <span class="assignee-chip" style="color:var(--chrome-highlight);">Para: ${assigneeName}</span>
           ${task.category ? `<span class="task-badge">${task.category}</span>` : ''}
         </div>
+
+        <!-- Inline Due Date Editor (Hidden by default) -->
+        <div class="inline-date-edit-wrap hidden" id="dateEditor_${task.id}">
+          <label style="font-size:0.65rem; color:var(--text-muted); font-weight:700;">NUEVA FECHA:</label>
+          <input type="date" class="inline-date-picker" value="${task.dueDate || ''}">
+          <button class="btn-inline-save">Guardar Fecha</button>
+          <button class="btn-inline-cancel">✕</button>
+        </div>
       </div>
     </div>
-    ${currentMember.isAdmin ? `
-      <div class="task-actions">
+
+    <div class="task-actions">
+      <button class="btn-task-action btn-edit-date" title="Modificar fecha de entrega">✏️ Cambiar Fecha</button>
+      ${currentMember.isAdmin ? `
         <button class="btn-task-action delete" data-delete-id="${task.id}">🗑 Eliminar</button>
-      </div>
-    ` : ''}
+      ` : ''}
+    </div>
   `;
 
   // Checkbox toggle status
   const checkBtn = card.querySelector('.task-check-btn');
   checkBtn.addEventListener('click', () => {
     toggleTaskStatus(task.id);
+  });
+
+  // Inline Due Date Editor Toggle
+  const dueBadge = card.querySelector('.due-badge');
+  const editDateBtn = card.querySelector('.btn-edit-date');
+  const dateEditor = card.querySelector(`#dateEditor_${task.id}`);
+  const saveDateBtn = card.querySelector('.btn-inline-save');
+  const cancelDateBtn = card.querySelector('.btn-inline-cancel');
+  const dateInput = card.querySelector('.inline-date-picker');
+
+  const toggleEditor = () => {
+    dateEditor.classList.toggle('hidden');
+    if (!dateEditor.classList.contains('hidden') && dateInput) {
+      dateInput.focus();
+    }
+  };
+
+  dueBadge.addEventListener('click', toggleEditor);
+  editDateBtn.addEventListener('click', toggleEditor);
+
+  cancelDateBtn.addEventListener('click', () => {
+    dateEditor.classList.add('hidden');
+  });
+
+  saveDateBtn.addEventListener('click', () => {
+    const newDate = dateInput.value;
+    if (!newDate) return;
+    task.dueDate = newDate;
+    saveData();
+    renderDashboard();
+    renderTasksManagement();
   });
 
   // Delete button (Admin)
@@ -397,6 +461,8 @@ function createTaskElement(task, isCompleted) {
 
 function getAssigneeName(assigneeId) {
   if (!assigneeId || assigneeId.toLowerCase() === 'all') return "Todas (Banda)";
+  if (assigneeId.toLowerCase() === 'crew') return "Crew & Management";
+  if (assigneeId.toLowerCase() === 'team') return "Todo el Equipo";
   const member = portalData.members.find(m => m.id.toLowerCase() === assigneeId.toLowerCase());
   return member ? member.name.split('/')[0].trim() : assigneeId;
 }
@@ -486,23 +552,13 @@ function setupTaskManagement() {
 }
 
 function renderTasksManagement() {
-  const openBtn = document.getElementById('openNewTaskBtn');
-  if (openBtn) {
-    // Only Luis Miguel can create & assign tasks
-    if (currentMember.isAdmin) {
-      openBtn.classList.remove('hidden');
-    } else {
-      openBtn.classList.add('hidden');
-    }
-  }
-
   const listEl = document.getElementById('tasksGlobalList');
   if (!listEl) return;
   listEl.innerHTML = '';
 
   let filtered = portalData.tasks;
   if (currentTaskFilter !== 'all') {
-    filtered = portalData.tasks.filter(t => t.assignedTo.toLowerCase() === currentTaskFilter.toLowerCase());
+    filtered = portalData.tasks.filter(t => (t.assignedTo || '').toLowerCase() === currentTaskFilter.toLowerCase());
   }
 
   if (filtered.length === 0) {
@@ -555,7 +611,6 @@ function setupSongIdeas() {
 
       let audioUrl = "";
       if (fileInput && fileInput.files && fileInput.files[0]) {
-        // Create local object URL for preview
         const file = fileInput.files[0];
         audioUrl = URL.createObjectURL(file);
       }
@@ -652,7 +707,7 @@ function renderSongIdeas() {
         <div class="comments-list">
           ${(idea.comments || []).map(c => `
             <div class="comment-item">
-              <span class="comment-author">${escapeHTML(c.authorName || 'Banda')}:</span>
+              <span class="comment-author">${escapeHTML(c.authorName || 'Equipo')}:</span>
               <span class="comment-text">${escapeHTML(c.text)}</span>
             </div>
           `).join('')}
@@ -888,8 +943,61 @@ function setupVideoPlayer() {
 }
 
 // -------------------------------------------------------------
-// 7. TAB 5: AGENDA & LEGAL TIMELINE
+// 7. TAB 5: AGENDA & CRONOGRAMA DE RELEASES / FECHAS
 // -------------------------------------------------------------
+function setupTimelineManagement() {
+  const openBtn = document.getElementById('openNewTimelineBtn');
+  const closeBtn = document.getElementById('closeTimelineFormBtn');
+  const formCard = document.getElementById('newTimelineFormCard');
+  const form = document.getElementById('createTimelineForm');
+
+  if (openBtn) {
+    openBtn.addEventListener('click', () => {
+      formCard.classList.remove('hidden');
+      formCard.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      formCard.classList.add('hidden');
+    });
+  }
+
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const newEvent = {
+        id: `tl_${Date.now()}`,
+        type: document.getElementById('tlType').value,
+        title: document.getElementById('tlTitle').value.trim(),
+        date: document.getElementById('tlDate').value,
+        desc: document.getElementById('tlDesc').value.trim()
+      };
+
+      if (!portalData.timeline) portalData.timeline = [];
+      portalData.timeline.unshift(newEvent);
+
+      // Sort timeline chronologically
+      sortTimeline();
+      saveData();
+
+      form.reset();
+      formCard.classList.add('hidden');
+      renderTimeline('all');
+      renderDashboard(); // refresh quick milestones
+    });
+  }
+}
+
+function sortTimeline() {
+  if (!portalData.timeline) return;
+  portalData.timeline.sort((a, b) => {
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
+  });
+}
+
 function renderTimeline(filter) {
   const container = document.getElementById('timelineList');
   if (!container) return;
@@ -898,17 +1006,46 @@ function renderTimeline(filter) {
   const items = portalData.timeline || [];
   const filtered = filter === 'all' ? items : items.filter(it => it.type === filter);
 
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:1rem; text-align:center;">
+        <p style="font-size:0.8rem; color:var(--text-muted);">No hay fechas registradas con este filtro.</p>
+      </div>
+    `;
+    return;
+  }
+
   filtered.forEach(it => {
     const card = document.createElement('div');
     card.className = 'timeline-card';
+    card.dataset.timelineId = it.id;
+
     card.innerHTML = `
       <div class="tl-header">
-        <span class="tl-tag">${it.type}</span>
-        <span class="tl-date">${it.date}</span>
+        <div class="tl-meta-left">
+          <span class="tl-tag">${it.type}</span>
+          <span class="tl-date">${it.date}</span>
+        </div>
+        ${currentMember.isAdmin ? `
+          <button class="tl-delete-btn" title="Eliminar fecha">🗑</button>
+        ` : ''}
       </div>
-      <div class="tl-title">${it.title}</div>
-      <div class="tl-desc">${it.desc}</div>
+      <div class="tl-title">${escapeHTML(it.title)}</div>
+      <div class="tl-desc">${escapeHTML(it.desc)}</div>
     `;
+
+    const delBtn = card.querySelector('.tl-delete-btn');
+    if (delBtn) {
+      delBtn.addEventListener('click', () => {
+        if (confirm(`¿Eliminar la fecha "${it.title}" del cronograma?`)) {
+          portalData.timeline = portalData.timeline.filter(t => t.id !== it.id);
+          saveData();
+          renderTimeline(filter);
+          renderDashboard();
+        }
+      });
+    }
+
     container.appendChild(card);
   });
 }
@@ -985,8 +1122,8 @@ function setupFirebaseSync() {
         statusDot.style.color = "#00e676";
       }
       if (syncBadge) syncBadge.textContent = "● Nube Activa";
-      alert("¡Configuración guardada! Se sincronizarán las tareas e ideas en Firestore.");
-      syncToCloud({ tasks: portalData.tasks, songIdeas: portalData.songIdeas });
+      alert("¡Configuración guardada! Se sincronizarán las tareas, ideas y fechas en Firestore.");
+      syncToCloud({ tasks: portalData.tasks, songIdeas: portalData.songIdeas, timeline: portalData.timeline });
     });
   }
 }
@@ -999,10 +1136,8 @@ async function syncToCloud(payload) {
     const cfg = JSON.parse(savedConfig);
     if (!cfg.projectId) return;
 
-    // Use Firestore REST API endpoint
     const url = `https://firestore.googleapis.com/v1/projects/${cfg.projectId}/databases/(default)/documents/bandPortal/sharedData`;
     
-    // Save as JSON string in document field
     const firestoreBody = {
       fields: {
         payloadJson: { stringValue: JSON.stringify(payload) },

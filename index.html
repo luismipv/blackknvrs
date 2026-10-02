@@ -23,8 +23,16 @@
         <p class="auth-tag">SELECCIONA TU PERFIL E INGRESA TU PIN</p>
       </div>
 
-      <div class="member-selector" id="memberButtons">
-        <!-- Rendered dynamically (Luis Miguel + 5 Chicas) -->
+      <div class="auth-member-groups">
+        <div class="group-heading">BANDA</div>
+        <div class="member-selector-grid" id="bandMemberButtons">
+          <!-- Dynamically filled with Pía, Adri, Kar, Maff, Dani -->
+        </div>
+
+        <div class="group-heading" style="margin-top: 0.75rem;">MANAGEMENT & CREW</div>
+        <div class="member-selector-grid crew-grid" id="crewMemberButtons">
+          <!-- Dynamically filled with Luis Miguel, Pavel, Edgar, Steph -->
+        </div>
       </div>
 
       <div class="selected-member-display" id="selectedMemberDisplay">
@@ -167,34 +175,46 @@
           <div class="title-with-action">
             <div>
               <h4 class="chrome-text">GESTIÓN DE TAREAS</h4>
-              <span class="subtitle">Asignación, fechas de entrega y responsabilidades</span>
+              <span class="subtitle">Asignación, edición de fechas y responsabilidades</span>
             </div>
-            <button class="btn-action-primary hidden" id="openNewTaskBtn">+ Asignar Tarea</button>
+            <button class="btn-action-primary" id="openNewTaskBtn">+ Asignar Tarea</button>
           </div>
         </div>
 
-        <!-- Admin Task Creator Card (Visible to Luis Miguel or opened by modal) -->
+        <!-- Admin Task Creator Card -->
         <div class="admin-task-card chrome-panel hidden" id="adminTaskFormCard">
           <div class="atc-header">
-            <span class="atc-tag">PANEL DE MANAGER // ASIGNACIÓN</span>
+            <span class="atc-tag">PANEL DE OPERACIONES // ASIGNACIÓN</span>
             <button class="atc-close" id="closeTaskFormBtn">✕</button>
           </div>
           <form id="createTaskForm" class="task-form">
             <div class="form-row">
               <label for="taskAssignee">Asignar a:</label>
               <select id="taskAssignee" class="form-input" required>
-                <option value="all">Todas (Banda Completa)</option>
-                <option value="pia">Valeria / Pía (Voz)</option>
-                <option value="adri">Adri (Bajo)</option>
-                <option value="kar">Kar (Guitarra)</option>
-                <option value="maff">Maff (Batería)</option>
-                <option value="dani">Dani (Guitarra)</option>
+                <optgroup label="Grupos">
+                  <option value="all">Todas (Banda Completa)</option>
+                  <option value="crew">Crew & Management</option>
+                  <option value="team">Todo el Equipo (Banda + Crew)</option>
+                </optgroup>
+                <optgroup label="Banda">
+                  <option value="pia">Valeria / Pía (Voz)</option>
+                  <option value="adri">Adri (Bajo)</option>
+                  <option value="kar">Kar (Guitarra)</option>
+                  <option value="maff">Maff (Batería)</option>
+                  <option value="dani">Dani (Guitarra)</option>
+                </optgroup>
+                <optgroup label="Crew & Management">
+                  <option value="luis">Luis Miguel (Manager / Productor)</option>
+                  <option value="pavel">Pavel Guerra (Video Producer)</option>
+                  <option value="edgar">Edgar (World Builder)</option>
+                  <option value="steph">Steph (Assistant Manager)</option>
+                </optgroup>
               </select>
             </div>
 
             <div class="form-row">
               <label for="taskTitle">Título de la tarea:</label>
-              <input type="text" id="taskTitle" class="form-input" placeholder="Ej. Grabar 2 videos de TikTok cantando verso" required>
+              <input type="text" id="taskTitle" class="form-input" placeholder="Ej. Rodaje de videoclip / Revisión de stems..." required>
             </div>
 
             <div class="form-row">
@@ -227,6 +247,7 @@
                 <option value="Videoclip">Videoclip</option>
                 <option value="Producción">Producción & Backline</option>
                 <option value="Composición">Composición / Ensayo</option>
+                <option value="Lore">World Building & Lore</option>
                 <option value="Legal">Legal & Finanzas</option>
               </select>
             </div>
@@ -244,6 +265,9 @@
             <button class="t-filter-btn" data-member="kar">Kar</button>
             <button class="t-filter-btn" data-member="maff">Maff</button>
             <button class="t-filter-btn" data-member="dani">Dani</button>
+            <button class="t-filter-btn" data-member="pavel">Pavel</button>
+            <button class="t-filter-btn" data-member="edgar">Edgar</button>
+            <button class="t-filter-btn" data-member="steph">Steph</button>
           </div>
         </div>
 
@@ -388,8 +412,50 @@
       <!-- TAB 5: AGENDA & LEGAL -->
       <section id="tab-legal" class="tab-pane">
         <div class="section-title-wrap">
-          <h4 class="chrome-text">CRONOGRAMA & LEGAL CDMX</h4>
-          <span class="subtitle">Lanzamientos, shows, splits y convenio vigente</span>
+          <div class="title-with-action">
+            <div>
+              <h4 class="chrome-text">CRONOGRAMA & RELEASES</h4>
+              <span class="subtitle">Lanzamientos, shows, rodajes y agenda CDMX</span>
+            </div>
+            <button class="btn-action-primary" id="openNewTimelineBtn">+ Agregar Fecha / Release</button>
+          </div>
+        </div>
+
+        <!-- New Timeline Event Form Card (Collapsible) -->
+        <div class="admin-task-card chrome-panel hidden" id="newTimelineFormCard">
+          <div class="atc-header">
+            <span class="atc-tag">AGREGAR FECHA O LANZAMIENTO</span>
+            <button class="atc-close" id="closeTimelineFormBtn">✕</button>
+          </div>
+          <form id="createTimelineForm" class="task-form">
+            <div class="form-row">
+              <label for="tlType">Tipo de Fecha / Hito:</label>
+              <select id="tlType" class="form-input" required>
+                <option value="release">🚀 Lanzamiento / Release de Canción</option>
+                <option value="live">🎸 Concierto / Show en Vivo</option>
+                <option value="video">🎬 Videoclip / Rodaje Oficial</option>
+                <option value="songwriting">✍️ Taller de Composición / Ensayo</option>
+                <option value="milestone">🎯 Hito / Anuncio Importante</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <label for="tlTitle">Título de la Fecha o Lanzamiento:</label>
+              <input type="text" id="tlTitle" class="form-input" placeholder="Ej. Estreno Single 01: 'Electricidad' en Spotify" required>
+            </div>
+
+            <div class="form-row">
+              <label for="tlDate">Fecha del Evento:</label>
+              <input type="date" id="tlDate" class="form-input" required>
+            </div>
+
+            <div class="form-row">
+              <label for="tlDesc">Descripción / Entregables / Plataformas:</label>
+              <textarea id="tlDesc" class="form-textarea" rows="2" placeholder="Detalles de la fecha, lugar, plataformas de distribución..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit-task" id="saveTimelineBtn">⚡ Guardar en el Cronograma Oficial</button>
+          </form>
         </div>
 
         <!-- Timeline Filters -->
@@ -456,7 +522,7 @@
           <p class="caja-desc">Aportación voluntaria ($50 MXN) por impuntualidad para insumos de estudio. Tesorería: Maff.</p>
         </div>
 
-        <!-- Firebase Sync Settings Collapsible Modal/Card -->
+        <!-- Firebase Sync Settings Collapsible Card -->
         <div class="sync-settings-card chrome-panel" style="margin-top: 1.5rem;">
           <div class="caja-header">
             <h5>CONEXIÓN EN LA NUBE // FIREBASE</h5>
@@ -491,8 +557,8 @@
         <span class="nav-label">Música</span>
       </button>
       <button class="nav-item" data-tab="tab-legal">
-        <span class="nav-icon">⚖️</span>
-        <span class="nav-label">Legal</span>
+        <span class="nav-icon">📅</span>
+        <span class="nav-label">Agenda</span>
       </button>
     </nav>
   </div>
