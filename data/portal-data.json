@@ -352,6 +352,39 @@
   ],
   "tasks": [
     {
+      "id": "t17",
+      "title": "Aprenderse todos los solos de VanHalen",
+      "description": "Práctica intensiva de solos y técnica para el setlist en vivo.",
+      "assignedTo": "kar",
+      "dueDate": "2026-10-02",
+      "priority": "Alta",
+      "status": "Pendiente",
+      "category": "Show",
+      "assignedBy": "Luis Miguel"
+    },
+    {
+      "id": "t18",
+      "title": "Conseguir un millón de dólares",
+      "description": "Financiamiento y patrocinios para la producción de la era.",
+      "assignedTo": "maff",
+      "dueDate": "2026-10-16",
+      "priority": "Alta",
+      "status": "Pendiente",
+      "category": "Visual",
+      "assignedBy": "Luis Miguel"
+    },
+    {
+      "id": "t19",
+      "title": "Bailar la macarena",
+      "description": "Contenido dinámico para campaña de redes sociales y TikTok.",
+      "assignedTo": "pia",
+      "dueDate": "2026-10-03",
+      "priority": "Alta",
+      "status": "Pendiente",
+      "category": "Redes",
+      "assignedBy": "Luis Miguel"
+    },
+    {
       "id": "t1",
       "title": "Sesión de fotos oficial del grupo (Pavel Guerra)",
       "description": "Coordinación de llamado en estudio con Pavel Guerra para fotos oficiales de prensa y portadas.",
