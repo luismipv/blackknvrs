@@ -460,6 +460,72 @@
       "status": "Pendiente",
       "category": "Visual",
       "assignedBy": "Luis Miguel"
+    },
+    {
+      "id": "t11",
+      "title": "Storyboard y guión técnico videoclip 'Electricidad'",
+      "description": "Desglose de planos, tiros de cámara, set LED y transiciones en Break Room.",
+      "assignedTo": "pavel",
+      "dueDate": "2026-10-24",
+      "priority": "Alta",
+      "status": "Pendiente",
+      "category": "Videoclip",
+      "assignedBy": "Luis Miguel"
+    },
+    {
+      "id": "t12",
+      "title": "Corte de color y teasers 4K de 'I LIKE 2 BE'",
+      "description": "Edición de soundbites verticales para TikTok y export oficial 4K para YouTube.",
+      "assignedTo": "pavel",
+      "dueDate": "2026-10-18",
+      "priority": "Alta",
+      "status": "Pendiente",
+      "category": "Videoclip",
+      "assignedBy": "Luis Miguel"
+    },
+    {
+      "id": "t13",
+      "title": "Manual de Estilo Visual y Moodboard CDMX",
+      "description": "Paleta cromática, texturas cromo/grunge y referencias de iluminación para escenografía.",
+      "assignedTo": "edgar",
+      "dueDate": "2026-10-14",
+      "priority": "Alta",
+      "status": "Pendiente",
+      "category": "Visual",
+      "assignedBy": "Luis Miguel"
+    },
+    {
+      "id": "t14",
+      "title": "Bocetos de Merch y Stickers Era 1",
+      "description": "Diseño de stickers holográficos, pines y playeras para venta en concierto del 23 Oct.",
+      "assignedTo": "edgar",
+      "dueDate": "2026-10-21",
+      "priority": "Media",
+      "status": "Pendiente",
+      "category": "Visual",
+      "assignedBy": "Luis Miguel"
+    },
+    {
+      "id": "t15",
+      "title": "Logística de transportación y llamado al show del 23 Oct",
+      "description": "Coordinación de traslados con backline, van de la banda y horarios de soundcheck.",
+      "assignedTo": "steph",
+      "dueDate": "2026-10-22",
+      "priority": "Crítica",
+      "status": "Pendiente",
+      "category": "Show",
+      "assignedBy": "Luis Miguel"
+    },
+    {
+      "id": "t16",
+      "title": "Negociación de rider de hospitalidad en foros CDMX",
+      "description": "Asegurar camerinos, agua, catering e insumos técnicos antes del concierto.",
+      "assignedTo": "steph",
+      "dueDate": "2026-10-20",
+      "priority": "Alta",
+      "status": "Pendiente",
+      "category": "Show",
+      "assignedBy": "Luis Miguel"
     }
   ],
   "songIdeas": [

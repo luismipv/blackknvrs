@@ -49,9 +49,13 @@ async function loadPortalData() {
       if (localSaved) {
         try {
           const parsed = JSON.parse(localSaved);
+          const savedTasks = parsed.tasks || [];
+          const existingIds = new Set(savedTasks.map(t => t.id));
+          const missingDefaultTasks = (defaultData.tasks || []).filter(t => !existingIds.has(t.id));
+
           portalData = {
             ...defaultData,
-            tasks: parsed.tasks || defaultData.tasks,
+            tasks: [...savedTasks, ...missingDefaultTasks],
             songIdeas: parsed.songIdeas || defaultData.songIdeas || [],
             timeline: parsed.timeline || defaultData.timeline || []
           };
@@ -155,8 +159,8 @@ function setupAuthUI() {
   }
 
   function validatePin() {
-    // Valid PIN matches member's PIN or master override
-    if (enteredPin === currentMember.pin || enteredPin === "9999" || enteredPin === "1234") {
+    // Valid PIN matches ONLY the selected member's specific PIN
+    if (enteredPin === currentMember.pin) {
       sessionStorage.setItem(ACTIVE_MEMBER_KEY, currentMember.id);
       loginSuccess();
     } else {
@@ -174,8 +178,21 @@ function setupAuthUI() {
     chip.className = `member-chip ${currentMember && currentMember.id === m.id ? 'selected' : ''}`;
     chip.style.setProperty('--chip-color', m.color || '#fff');
     chip.dataset.memberId = m.id;
+
+    let avatarHtml = '';
+    if (m.category === 'band') {
+      avatarHtml = `<img src="${m.avatar || 'images/logo.png'}" onerror="this.src='images/logo.png'" class="chip-avatar-img">`;
+    } else {
+      let icon = 'BK';
+      if (m.id === 'luis') icon = '👑';
+      else if (m.id === 'pavel') icon = '🎬';
+      else if (m.id === 'edgar') icon = '🌌';
+      else if (m.id === 'steph') icon = '⚡';
+      avatarHtml = `<div class="chip-badge-icon" style="border-color:${m.color}; color:${m.color};">${icon}</div>`;
+    }
+
     chip.innerHTML = `
-      <img src="${m.avatar || 'images/logo.png'}" onerror="this.src='images/logo.png'" class="chip-avatar-img">
+      ${avatarHtml}
       <span class="chip-name">${m.name.split('/')[0].trim()}</span>
     `;
     chip.addEventListener('click', () => selectMember(m.id));
@@ -278,8 +295,7 @@ function renderDashboard() {
     const myId = currentMember.id.toLowerCase();
     
     if (target === myId) return true;
-    if (target === 'team') return true;
-    if (currentMember.category === 'band' && target === 'all') return true;
+    if (target === 'all' || target === 'team') return true; // Everyone sees general team milestones!
     if (currentMember.category === 'crew' && target === 'crew') return true;
     return false;
   });

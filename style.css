@@ -196,6 +196,19 @@ body {
   border: 1.5px solid var(--chip-color, #fff);
 }
 
+.chip-badge-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1.5px solid var(--chip-color, #fff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  box-shadow: 0 0 8px var(--chip-color, rgba(255, 255, 255, 0.2));
+}
+
 .chip-name {
   font-size: 0.58rem;
   font-weight: 700;
