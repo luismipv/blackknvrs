@@ -526,13 +526,15 @@
         <div class="sync-settings-card chrome-panel" style="margin-top: 1.5rem;">
           <div class="caja-header">
             <h5>CONEXIÓN EN LA NUBE // FIREBASE</h5>
-            <span class="sync-status-dot" id="syncStatusDot">Local</span>
+            <span class="sync-status-dot" id="syncStatusDot">Conectado</span>
           </div>
-          <p class="caja-desc">Ingresa las credenciales de Firebase Firestore para sincronización instantánea en vivo entre todos los dispositivos.</p>
+          <p class="caja-desc">Base de datos central en Google Firestore (<strong style="color:var(--text-white);">black-knvrs</strong>). Todas las tareas, ideas y fechas se sincronizan instantáneamente en todos los celulares.</p>
           <div class="firebase-inputs" id="firebaseConfigBox">
-            <input type="text" id="fbApiKey" class="form-input" placeholder="Firebase API Key (opcional)" style="margin-bottom: 0.5rem; font-size: 0.72rem;">
-            <input type="text" id="fbProjectId" class="form-input" placeholder="Firebase Project ID" style="margin-bottom: 0.5rem; font-size: 0.72rem;">
-            <button class="btn-drive" id="saveFirebaseBtn" style="width: 100%; border-radius: 8px;">Conectar Nube ⚡</button>
+            <input type="text" id="fbProjectId" class="form-input" placeholder="Firebase Project ID" value="black-knvrs" style="margin-bottom: 0.5rem; font-size: 0.75rem;">
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button class="btn-drive" id="saveFirebaseBtn" style="flex: 1; min-width: 140px; border-radius: 8px;">Forzar Sync ⚡</button>
+              <button class="btn-drive" id="exportBackupBtn" style="flex: 1; min-width: 140px; border-radius: 8px; background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15);">Descargar Respaldo 💾</button>
+            </div>
           </div>
         </div>
       </section>

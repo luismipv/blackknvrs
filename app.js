@@ -11,6 +11,8 @@ let currentTaskFilter = 'all';
 const STORAGE_KEY = 'bk_portal_data_v2';
 const ACTIVE_MEMBER_KEY = 'bk_active_member_id';
 const FIREBASE_CONFIG_KEY = 'bk_firebase_config';
+const DEFAULT_FIREBASE_PROJECT_ID = 'black-knvrs';
+let lastRemoteSyncTime = null;
 
 // -------------------------------------------------------------
 // 1. INITIALIZATION & DATA PERSISTENCE
@@ -70,6 +72,9 @@ async function loadPortalData() {
   } catch (e) {
     console.error("Critical: Could not load portal data", e);
   }
+
+  // Sincronizar de inmediato con Firebase Firestore (Nube Central)
+  await fetchFromCloud(true);
 }
 
 function saveData() {
@@ -81,7 +86,7 @@ function saveData() {
   };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
 
-  // Push to Firebase if configured
+  // Push to Firebase Firestore
   syncToCloud(toSave);
 }
 
@@ -1096,68 +1101,133 @@ function setupNavigation() {
 }
 
 // -------------------------------------------------------------
-// 9. FIREBASE CLOUD SYNC ADAPTER
 // -------------------------------------------------------------
-function setupFirebaseSync() {
-  const saveFbBtn = document.getElementById('saveFirebaseBtn');
-  const apiKeyInput = document.getElementById('fbApiKey');
-  const projectIdInput = document.getElementById('fbProjectId');
-  const statusDot = document.getElementById('syncStatusDot');
-  const syncBadge = document.getElementById('syncBadge');
-
+// 9. FIREBASE CLOUD SYNC & CENTRAL DATA ADAPTER
+// -------------------------------------------------------------
+function getFirebaseProjectId() {
   const savedConfig = localStorage.getItem(FIREBASE_CONFIG_KEY);
   if (savedConfig) {
     try {
       const cfg = JSON.parse(savedConfig);
-      if (apiKeyInput) apiKeyInput.value = cfg.apiKey || '';
-      if (projectIdInput) projectIdInput.value = cfg.projectId || '';
-      if (statusDot) {
-        statusDot.textContent = "Conectado";
-        statusDot.style.background = "rgba(0, 230, 118, 0.2)";
-        statusDot.style.color = "#00e676";
+      if (cfg.projectId && cfg.projectId.trim()) {
+        return cfg.projectId.trim();
       }
-      if (syncBadge) syncBadge.textContent = "● Nube Activa";
     } catch (e) {}
   }
+  return DEFAULT_FIREBASE_PROJECT_ID;
+}
 
-  if (saveFbBtn) {
-    saveFbBtn.addEventListener('click', () => {
-      const apiKey = apiKeyInput.value.trim();
-      const projectId = projectIdInput.value.trim();
+function updateSyncStatusUI(isOnline, text) {
+  const syncBadge = document.getElementById('syncBadge');
+  const statusDot = document.getElementById('syncStatusDot');
 
-      if (!projectId) {
-        alert("Por favor ingresa al menos tu Project ID de Firebase.");
-        return;
+  if (syncBadge) {
+    syncBadge.textContent = text || (isOnline ? "● Sincronizado" : "● Modo Local");
+    syncBadge.style.color = isOnline ? "#00e676" : "#ff9100";
+    syncBadge.style.background = isOnline ? "rgba(0, 230, 118, 0.12)" : "rgba(255, 145, 0, 0.12)";
+  }
+
+  if (statusDot) {
+    statusDot.textContent = isOnline ? "Conectado" : "Local";
+    statusDot.style.color = isOnline ? "#00e676" : "#ff9100";
+    statusDot.style.background = isOnline ? "rgba(0, 230, 118, 0.2)" : "rgba(255, 145, 0, 0.2)";
+  }
+}
+
+function refreshActiveViews() {
+  if (!currentMember) return;
+  // No interrumpir si el usuario está escribiendo en un input
+  const activeEl = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+  if (activeEl === 'input' || activeEl === 'textarea') {
+    return;
+  }
+  renderDashboard();
+  renderTasksManagement();
+  renderSongIdeas();
+  renderTimeline('all');
+}
+
+async function fetchFromCloud(isInitial = false) {
+  const projectId = getFirebaseProjectId();
+  if (!projectId) return false;
+
+  try {
+    const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/bandPortal/sharedData`;
+    const res = await fetch(url);
+    if (!res.ok) {
+      if (res.status === 404 && portalData) {
+        await syncToCloud({
+          tasks: portalData.tasks || [],
+          songIdeas: portalData.songIdeas || [],
+          timeline: portalData.timeline || []
+        });
+      }
+      return false;
+    }
+
+    const data = await res.json();
+    if (data && data.fields && data.fields.payloadJson) {
+      const remotePayload = JSON.parse(data.fields.payloadJson.stringValue);
+      const remoteUpdatedAt = data.fields.updatedAt ? data.fields.updatedAt.stringValue : data.updateTime;
+
+      if (portalData) {
+        const localCurrentJson = JSON.stringify({
+          tasks: portalData.tasks,
+          songIdeas: portalData.songIdeas,
+          timeline: portalData.timeline
+        });
+        const remoteCurrentJson = JSON.stringify({
+          tasks: remotePayload.tasks || [],
+          songIdeas: remotePayload.songIdeas || [],
+          timeline: remotePayload.timeline || []
+        });
+
+        if (localCurrentJson !== remoteCurrentJson) {
+          portalData.tasks = remotePayload.tasks || [];
+          portalData.songIdeas = remotePayload.songIdeas || [];
+          portalData.timeline = remotePayload.timeline || [];
+
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            tasks: portalData.tasks,
+            songIdeas: portalData.songIdeas,
+            timeline: portalData.timeline
+          }));
+
+          if (!isInitial) {
+            refreshActiveViews();
+          }
+        }
       }
 
-      const config = { apiKey, projectId };
-      localStorage.setItem(FIREBASE_CONFIG_KEY, JSON.stringify(config));
-      if (statusDot) {
-        statusDot.textContent = "Conectado";
-        statusDot.style.background = "rgba(0, 230, 118, 0.2)";
-        statusDot.style.color = "#00e676";
-      }
-      if (syncBadge) syncBadge.textContent = "● Nube Activa";
-      alert("¡Configuración guardada! Se sincronizarán las tareas, ideas y fechas en Firestore.");
-      syncToCloud({ tasks: portalData.tasks, songIdeas: portalData.songIdeas, timeline: portalData.timeline });
-    });
+      lastRemoteSyncTime = remoteUpdatedAt || new Date().toISOString();
+      updateSyncStatusUI(true, "● Sincronizado");
+      return true;
+    }
+  } catch (err) {
+    console.warn("Aviso de sincronización en la nube:", err);
+    updateSyncStatusUI(false, "● Modo Local");
+    return false;
   }
 }
 
 async function syncToCloud(payload) {
-  const savedConfig = localStorage.getItem(FIREBASE_CONFIG_KEY);
-  if (!savedConfig) return;
+  const projectId = getFirebaseProjectId();
+  if (!projectId) return;
+
+  const syncBadge = document.getElementById('syncBadge');
+  if (syncBadge) {
+    syncBadge.textContent = "● Guardando...";
+    syncBadge.style.color = "#ffb300";
+    syncBadge.style.background = "rgba(255, 179, 0, 0.15)";
+  }
 
   try {
-    const cfg = JSON.parse(savedConfig);
-    if (!cfg.projectId) return;
-
-    const url = `https://firestore.googleapis.com/v1/projects/${cfg.projectId}/databases/(default)/documents/bandPortal/sharedData`;
-    
+    const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/bandPortal/sharedData`;
+    const nowIso = new Date().toISOString();
     const firestoreBody = {
       fields: {
         payloadJson: { stringValue: JSON.stringify(payload) },
-        updatedAt: { stringValue: new Date().toISOString() }
+        updatedAt: { stringValue: nowIso }
       }
     };
 
@@ -1168,12 +1238,105 @@ async function syncToCloud(payload) {
     });
 
     if (res.ok) {
-      const syncBadge = document.getElementById('syncBadge');
-      if (syncBadge) syncBadge.textContent = "● Sincronizado";
+      lastRemoteSyncTime = nowIso;
+      updateSyncStatusUI(true, "● Sincronizado");
+    } else {
+      console.warn("Respuesta de Firestore al guardar:", res.status);
+      updateSyncStatusUI(false, "● Guardado Local");
     }
   } catch (err) {
-    console.log("Cloud sync notice:", err);
+    console.warn("Error enviando cambios a la nube:", err);
+    updateSyncStatusUI(false, "● Guardado Local");
   }
+}
+
+function exportBackupData() {
+  if (!portalData) return;
+  const backup = {
+    band: "Black KNVRS",
+    exportDate: new Date().toISOString(),
+    tasks: portalData.tasks,
+    songIdeas: portalData.songIdeas,
+    timeline: portalData.timeline
+  };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `blackknvrs_backup_${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function setupFirebaseSync() {
+  const saveFbBtn = document.getElementById('saveFirebaseBtn');
+  const exportBtn = document.getElementById('exportBackupBtn');
+  const projectIdInput = document.getElementById('fbProjectId');
+
+  if (projectIdInput) {
+    projectIdInput.value = getFirebaseProjectId();
+  }
+
+  updateSyncStatusUI(true, "● Nube Activa");
+
+  if (saveFbBtn) {
+    saveFbBtn.addEventListener('click', async () => {
+      const projectId = projectIdInput ? projectIdInput.value.trim() : '';
+
+      if (!projectId) {
+        alert("Por favor ingresa el Project ID de Firebase.");
+        return;
+      }
+
+      localStorage.setItem(FIREBASE_CONFIG_KEY, JSON.stringify({ projectId }));
+      updateSyncStatusUI(true, "● Sincronizando...");
+
+      await syncToCloud({
+        tasks: portalData.tasks,
+        songIdeas: portalData.songIdeas,
+        timeline: portalData.timeline
+      });
+      alert("¡Nube conectada! Se ha sincronizado todo con Firestore (" + projectId + ").");
+    });
+  }
+
+  if (exportBtn) {
+    exportBtn.addEventListener('click', exportBackupData);
+  }
+
+  // Polling automático cada 25 segundos
+  setInterval(() => {
+    fetchFromCloud(false);
+  }, 25000);
+
+  // Sincronizar en cuanto la pestaña vuelve a ser visible o toma foco
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      fetchFromCloud(false);
+    }
+  });
+  window.addEventListener('focus', () => {
+    fetchFromCloud(false);
+  });
+
+  // Reintento al recuperar conexión a internet
+  window.addEventListener('online', () => {
+    updateSyncStatusUI(true, "● En línea");
+    if (portalData) {
+      syncToCloud({
+        tasks: portalData.tasks,
+        songIdeas: portalData.songIdeas,
+        timeline: portalData.timeline
+      });
+    }
+    fetchFromCloud(false);
+  });
+
+  window.addEventListener('offline', () => {
+    updateSyncStatusUI(false, "● Sin Conexión");
+  });
 }
 
 // -------------------------------------------------------------
