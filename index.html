@@ -192,7 +192,7 @@
               <span id="waStatusBadge" class="status-pill" style="font-size:0.65rem; background:rgba(255,179,0,0.12); color:#ffb300;">Comprobando puente...</span>
             </div>
             <div style="display:flex; gap:0.5rem; align-items:center;">
-              <button type="button" id="btnToggleWaApiKey" class="btn-task-action" style="font-size:0.7rem; padding:0.25rem 0.65rem; border-color:rgba(255,179,0,0.4); color:#ffb300; background:rgba(255,179,0,0.08);" title="Configurar o cambiar tu Gemini API Key">🔑 Cambiar Llave</button>
+              <button type="button" id="btnToggleWaApiKey" onclick="toggleWaApiKeyBox()" class="btn-task-action" style="font-size:0.7rem; padding:0.25rem 0.65rem; border-color:rgba(255,179,0,0.4); color:#ffb300; background:rgba(255,179,0,0.08); cursor:pointer;" title="Configurar o cambiar tu Gemini API Key">🔑 Cambiar Llave</button>
               <button class="atc-close" id="closeWaAssistantBtn">✕</button>
             </div>
           </div>
@@ -211,7 +211,7 @@
               <input type="date" id="waEndDate" class="form-input" style="padding:0.5rem 0.6rem; font-size:0.8rem;">
             </div>
             <div>
-              <button class="btn-submit-task" id="btnScanWhatsApp" style="padding:0.55rem 1.1rem; white-space:nowrap; margin:0; background:linear-gradient(135deg, #00e676, #00b0ff); color:#000; font-weight:800; border:none;">
+              <button class="btn-submit-task" id="btnScanWhatsApp" style="padding:0.55rem 1.1rem; white-space:nowrap; margin:0; background:linear-gradient(135deg, #00e676, #00b0ff); color:#000; font-weight:800; border:none; cursor:pointer;">
                 🔍 Analizar Acuerdos
               </button>
             </div>
@@ -225,8 +225,8 @@
             </div>
             <div style="display:flex; gap:0.5rem; margin-top:0.4rem; flex-wrap:wrap;">
               <input type="text" id="waCustomApiKey" class="form-input" placeholder="Pega tu API Key de Gemini (ej. AIzaSy...)" style="font-size:0.75rem; flex:1; min-width:220px; font-family:monospace;">
-              <button type="button" id="btnSaveWaApiKey" class="btn-inline-save" style="white-space:nowrap; padding:0.4rem 0.9rem; font-weight:700;">Guardar Llave</button>
-              <button type="button" id="btnClearWaApiKey" class="btn-task-action delete" style="white-space:nowrap; padding:0.4rem 0.8rem;" title="Borrar llave actual y volver a empezar">✕ Borrar</button>
+              <button type="button" id="btnSaveWaApiKey" onclick="saveWaApiKeyDirect()" class="btn-inline-save" style="white-space:nowrap; padding:0.4rem 0.9rem; font-weight:700; cursor:pointer;">Guardar Llave</button>
+              <button type="button" id="btnClearWaApiKey" onclick="clearWaApiKeyDirect()" class="btn-task-action delete" style="white-space:nowrap; padding:0.4rem 0.8rem; cursor:pointer;" title="Borrar llave actual y volver a empezar">✕ Borrar</button>
             </div>
             <span style="font-size:0.64rem; color:var(--text-muted); margin-top:0.35rem; display:block;">
               Genera tu llave gratuita en <a href="https://aistudio.google.com" target="_blank" rel="noopener" style="color:#00e676; text-decoration:underline;">aistudio.google.com</a>. Se guarda únicamente en tu navegador local.
@@ -648,6 +648,43 @@
     </nav>
   </div>
 
-  <script src="app.js"></script>
+  <script>
+    function toggleWaApiKeyBox() {
+      const row = document.getElementById('waApiKeyRow');
+      if (row) {
+        row.classList.toggle('hidden');
+        const input = document.getElementById('waCustomApiKey');
+        if (input) {
+          input.value = localStorage.getItem('bk_gemini_key') || '';
+          if (!row.classList.contains('hidden')) input.focus();
+        }
+      }
+    }
+    function saveWaApiKeyDirect() {
+      const input = document.getElementById('waCustomApiKey');
+      if (!input) return;
+      const key = input.value.trim();
+      if (key) {
+        localStorage.setItem('bk_gemini_key', key);
+        alert('✅ API Key guardada en tu navegador.');
+        const row = document.getElementById('waApiKeyRow');
+        if (row) row.classList.add('hidden');
+        const statusText = document.getElementById('waApiKeyStatusText');
+        if (statusText) statusText.textContent = '● Llave guardada (' + key.slice(0, 4) + '...' + key.slice(-4) + ')';
+      } else {
+        alert('Pega una clave válida.');
+      }
+    }
+    function clearWaApiKeyDirect() {
+      localStorage.removeItem('bk_gemini_key');
+      const input = document.getElementById('waCustomApiKey');
+      if (input) input.value = '';
+      alert('Se eliminó la clave guardada.');
+      const statusText = document.getElementById('waApiKeyStatusText');
+      if (statusText) statusText.textContent = '○ Sin llave guardada';
+    }
+  </script>
+  <script src="app.js?v=20261012_03"></script>
 </body>
 </html>
+

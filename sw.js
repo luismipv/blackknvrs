@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bk-portal-v9';
+const CACHE_NAME = 'bk-portal-v10';
 const ASSETS_TO_CACHE = [
   'index.html',
   'style.css',
@@ -39,6 +39,12 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  // En localhost / entorno local de desarrollo, siempre ir directo a la red (sin caché)
+  if (self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1') {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then(response => {
       return response || fetch(event.request);
