@@ -1425,6 +1425,10 @@ function setupWhatsAppAssistant() {
   const cancelBtn = document.getElementById('btnCancelWaTasks');
   const publishBtn = document.getElementById('btnPublishWaTasks');
 
+  const toggleKeyBtn = document.getElementById('btnToggleWaApiKey');
+  const clearKeyBtn = document.getElementById('btnClearWaApiKey');
+  const keyStatusText = document.getElementById('waApiKeyStatusText');
+
   if (!card) return;
 
   // Initialize date defaults (from 2 days ago to today)
@@ -1436,19 +1440,57 @@ function setupWhatsAppAssistant() {
   if (startInput && !startInput.value) startInput.value = formatDate(twoDaysAgo);
   if (endInput && !endInput.value) endInput.value = formatDate(today);
 
-  // Load saved custom API key from localStorage if present
-  const savedKey = localStorage.getItem('bk_gemini_key') || '';
-  if (apiKeyInput && savedKey) {
-    apiKeyInput.value = savedKey;
+  function updateKeyStatus() {
+    const saved = localStorage.getItem('bk_gemini_key') || '';
+    if (keyStatusText) {
+      if (saved) {
+        const masked = saved.length > 8 ? `${saved.slice(0, 4)}...${saved.slice(-4)}` : '••••••••';
+        keyStatusText.textContent = `● Llave guardada (${masked})`;
+        keyStatusText.style.color = '#00e676';
+      } else {
+        keyStatusText.textContent = '○ Sin llave guardada';
+        keyStatusText.style.color = '#ffb300';
+      }
+    }
+    if (apiKeyInput && saved) {
+      apiKeyInput.value = saved;
+    }
   }
 
+  updateKeyStatus();
+
+  // Toggle API Key Row
+  if (toggleKeyBtn) {
+    toggleKeyBtn.addEventListener('click', () => {
+      apiKeyRow.classList.toggle('hidden');
+      updateKeyStatus();
+      if (!apiKeyRow.classList.contains('hidden') && apiKeyInput) {
+        apiKeyInput.focus();
+      }
+    });
+  }
+
+  // Clear API Key
+  if (clearKeyBtn) {
+    clearKeyBtn.addEventListener('click', () => {
+      localStorage.removeItem('bk_gemini_key');
+      if (apiKeyInput) apiKeyInput.value = '';
+      updateKeyStatus();
+      alert('Se eliminó la API Key guardada. Ahora puedes ingresar una nueva.');
+    });
+  }
+
+  // Save API Key
   if (saveKeyBtn) {
     saveKeyBtn.addEventListener('click', () => {
       const val = (apiKeyInput.value || '').trim();
       if (val) {
         localStorage.setItem('bk_gemini_key', val);
-        alert('API Key de Gemini guardada localmente.');
+        updateKeyStatus();
+        alert('✅ API Key de Gemini guardada correctamente.');
         if (apiKeyRow) apiKeyRow.classList.add('hidden');
+      } else {
+        alert('Por favor pega una API Key válida.');
       }
     });
   }
@@ -1480,8 +1522,6 @@ function setupWhatsAppAssistant() {
         statusBadge.style.background = "rgba(0, 230, 118, 0.12)";
         if (!data.hasApiKey && !localStorage.getItem('bk_gemini_key')) {
           apiKeyRow.classList.remove('hidden');
-        } else {
-          apiKeyRow.classList.add('hidden');
         }
       } else {
         throw new Error('offline');
@@ -1526,10 +1566,10 @@ function setupWhatsAppAssistant() {
         loader.classList.add('hidden');
 
         if (!res.ok || data.error) {
-          if (data.error && data.error.includes('Gemini API Key')) {
-            apiKeyRow.classList.remove('hidden');
-          }
-          alert(`Aviso: ${data.error || 'Error al procesar'}`);
+          // Reabrir inmediatamente la caja de API Key si hubo error
+          apiKeyRow.classList.remove('hidden');
+          apiKeyRow.scrollIntoView({ behavior: 'smooth' });
+          alert(`Aviso: ${data.error || 'Error al procesar'}\n\nPuedes revisar o cambiar tu API Key de Gemini en el recuadro que se abrió abajo.`);
           return;
         }
 
@@ -1538,6 +1578,7 @@ function setupWhatsAppAssistant() {
         resultsContainer.classList.remove('hidden');
       } catch (err) {
         loader.classList.add('hidden');
+        apiKeyRow.classList.remove('hidden');
         alert("No se pudo conectar al puente local (127.0.0.1:5005). Asegúrate de tener corriendo 'python wa_assistant.py' en la terminal.");
       }
     });

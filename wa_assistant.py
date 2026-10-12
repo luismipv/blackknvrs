@@ -166,30 +166,54 @@ CONVERSACIÓN DE WHATSAPP:
 {convo_text}
 """
 
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
-    body = {
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {
-            "responseMimeType": "application/json",
-            "temperature": 0.2
+    models_to_try = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro"]
+    last_error_msg = None
+
+    for model in models_to_try:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+        body = {
+            "contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": {
+                "responseMimeType": "application/json",
+                "temperature": 0.2
+            }
         }
-    }
 
-    req = urllib.request.Request(
-        url,
-        data=json.dumps(body).encode('utf-8'),
-        headers={'Content-Type': 'application/json'},
-        method='POST'
-    )
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(body).encode('utf-8'),
+            headers={'Content-Type': 'application/json'},
+            method='POST'
+        )
 
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        res_data = json.loads(resp.read().decode('utf-8'))
-        candidates = res_data.get('candidates', [])
-        if candidates and 'content' in candidates[0]:
-            parts = candidates[0]['content'].get('parts', [])
-            if parts and 'text' in parts[0]:
-                raw_text = parts[0]['text'].strip()
-                return json.loads(raw_text)
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                res_data = json.loads(resp.read().decode('utf-8'))
+                candidates = res_data.get('candidates', [])
+                if candidates and 'content' in candidates[0]:
+                    parts = candidates[0]['content'].get('parts', [])
+                    if parts and 'text' in parts[0]:
+                        raw_text = parts[0]['text'].strip()
+                        return json.loads(raw_text)
+                return []
+        except urllib.error.HTTPError as e:
+            err_body = e.read().decode('utf-8', errors='ignore')
+            try:
+                err_json = json.loads(err_body)
+                msg = err_json.get('error', {}).get('message', err_body)
+            except Exception:
+                msg = err_body
+            last_error_msg = f"Error {e.code}: {msg}"
+            if e.code == 404:
+                # Si el modelo no existe, intenta el siguiente
+                continue
+            raise Exception(last_error_msg)
+        except Exception as e:
+            last_error_msg = str(e)
+            raise Exception(last_error_msg)
+
+    if last_error_msg:
+        raise Exception(last_error_msg)
     return []
 
 class BridgeHandler(http.server.SimpleHTTPRequestHandler):
