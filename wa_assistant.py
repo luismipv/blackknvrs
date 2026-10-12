@@ -192,7 +192,7 @@ CONVERSACIÓN DE WHATSAPP:
                 return json.loads(raw_text)
     return []
 
-class BridgeHandler(http.server.BaseHTTPRequestHandler):
+class BridgeHandler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
@@ -218,8 +218,8 @@ class BridgeHandler(http.server.BaseHTTPRequestHandler):
                 'hasApiKey': bool(env_key)
             }).encode('utf-8'))
         else:
-            self.send_response(404)
-            self.end_headers()
+            # Servir la web estática (index.html, app.js, etc.)
+            super().do_GET()
 
     def do_POST(self):
         if self.path == '/api/extract-tasks':

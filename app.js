@@ -1470,8 +1470,9 @@ function setupWhatsAppAssistant() {
 
   async function checkBridgeStatus() {
     if (!statusBadge) return;
+    const bridgeBase = window.location.port === '5005' ? '' : 'http://127.0.0.1:5005';
     try {
-      const res = await fetch('http://127.0.0.1:5005/api/status', { mode: 'cors' });
+      const res = await fetch(`${bridgeBase}/api/status`, { mode: 'cors' });
       if (res.ok) {
         const data = await res.json();
         statusBadge.textContent = "● Puente Activo (127.0.0.1:5005)";
@@ -1508,9 +1509,10 @@ function setupWhatsAppAssistant() {
       proposedList.innerHTML = '';
 
       const customKey = (apiKeyInput ? apiKeyInput.value.trim() : '') || localStorage.getItem('bk_gemini_key') || '';
+      const bridgeBase = window.location.port === '5005' ? '' : 'http://127.0.0.1:5005';
 
       try {
-        const res = await fetch('http://127.0.0.1:5005/api/extract-tasks', {
+        const res = await fetch(`${bridgeBase}/api/extract-tasks`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
