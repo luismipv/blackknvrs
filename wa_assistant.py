@@ -166,7 +166,89 @@ CONVERSACIÓN DE WHATSAPP:
 {convo_text}
 """
 
-    models_to_try = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro"]
+def get_available_models(api_key):
+    """Consulta la API de Google para descubrir qué modelos soporta exactamente esta API Key."""
+    try:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
+        req = urllib.request.Request(url, method='GET')
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+            models = data.get('models', [])
+            gen_models = []
+            for m in models:
+                methods = m.get('supportedGenerationMethods', [])
+                if 'generateContent' in methods:
+                    name = m.get('name', '').replace('models/', '')
+                    gen_models.append(name)
+            if gen_models:
+                print(f"[Gemini ListModels]: Modelos disponibles para esta llave: {gen_models}")
+                return gen_models
+    except Exception as e:
+        print(f"[Aviso ListModels]: {e}")
+    return ["gemini-1.5-flash-latest", "gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro", "gemini-pro"]
+
+def analyze_with_gemini(messages, api_key):
+    if not messages:
+        return []
+
+    convo_text = "\n".join([f"[{m['date']}] {m['sender']}: {m['text']}" for m in messages])
+
+    prompt = f"""Eres el Asistente Ejecutivo del proyecto musical BLACK KNVRS (Banda mexicana de Pop Rock / Alt Rock).
+Tu trabajo es analizar la siguiente conversación del grupo de WhatsApp oficial de la banda y extraer ÚNICAMENTE compromisos reales, entregables, asignaciones y tareas operativas acordadas.
+
+INTEGRANTES Y ROLES:
+- Luis Miguel (id: luis): Manager / Productor Ejecutivo
+- Pavel Guerra (id: pavel): Video Producer / Audiovisual
+- Edgar Valerio / Mäsh (id: edgar): World Builder / Dirección de Arte & Vestuario
+- Steph (id: steph): Assistant Manager / Logística
+- Valeria / Pía (id: pia): Cantante / Voz principal
+- Adrianne / Adri (id: adri): Bajista
+- Kar (id: kar): Guitarrista rítmica
+- Maff (id: maff): Baterista / Tesorería 'La Caja'
+- Dani (id: dani): Guitarrista líder / Backline
+- Toda la banda: (id: all)
+- Todo el equipo (Banda + Crew): (id: team)
+
+REGLAS DE EXTRACCIÓN:
+1. Filtra y descarta completamente bromas, risas, stickers, saludos y plática casual.
+2. Extrae únicamente tareas donde alguien se haya comprometido a algo, donde se haya pedido un entregable o donde haya un acuerdo claro (ej: enviar documentos, cotizar, definir looks, conseguir utilería, ensayar, etc.).
+3. Para cada tarea define:
+   - title: Título claro y profesional de la tarea.
+   - description: Qué se tiene que hacer específicamente.
+   - assignedTo: Uno de los siguientes IDs exactos: 'luis', 'pavel', 'edgar', 'steph', 'pia', 'adri', 'kar', 'maff', 'dani', 'all', o 'team'.
+   - dueDate: Fecha límite tentativa en formato 'YYYY-MM-DD' (si no se menciona una fecha exacta, sugiere una fecha lógica razonable).
+   - priority: 'Crítica', 'Alta', 'Media', o 'Baja'.
+   - category: 'Videoclip', 'Visual', 'Producción', 'Composición', 'Show', 'Redes', 'Legal', o 'Lore'.
+   - quote: Breve fragmento del chat donde se acordó.
+
+Devuelve EXCLUSIVAMENTE un arreglo JSON válido con las tareas:
+[
+  {{
+    "title": "...",
+    "description": "...",
+    "assignedTo": "...",
+    "dueDate": "YYYY-MM-DD",
+    "priority": "Alta",
+    "category": "Videoclip",
+    "quote": "..."
+  }}
+]
+
+CONVERSACIÓN DE WHATSAPP:
+{convo_text}
+"""
+
+    discovered = get_available_models(api_key)
+    
+    # Ordenar modelos dando prioridad a los flash
+    def sort_key(m):
+        if '1.5-flash' in m: return 0
+        if '2.0-flash' in m: return 1
+        if 'flash' in m: return 2
+        if '1.5-pro' in m: return 3
+        return 4
+    
+    models_to_try = sorted(discovered, key=sort_key)
     last_error_msg = None
 
     for model in models_to_try:
@@ -187,14 +269,20 @@ CONVERSACIÓN DE WHATSAPP:
         )
 
         try:
-            with urllib.request.urlopen(req, timeout=30) as resp:
+            with urllib.request.urlopen(req, timeout=35) as resp:
                 res_data = json.loads(resp.read().decode('utf-8'))
                 candidates = res_data.get('candidates', [])
                 if candidates and 'content' in candidates[0]:
                     parts = candidates[0]['content'].get('parts', [])
                     if parts and 'text' in parts[0]:
                         raw_text = parts[0]['text'].strip()
-                        return json.loads(raw_text)
+                        clean_json = raw_text
+                        if '```' in clean_json:
+                            import re
+                            match = re.search(r'```(?:json)?\s*([\s\S]*?)\s*```', clean_json)
+                            if match:
+                                clean_json = match.group(1)
+                        return json.loads(clean_json.strip())
                 return []
         except urllib.error.HTTPError as e:
             err_body = e.read().decode('utf-8', errors='ignore')
@@ -203,14 +291,15 @@ CONVERSACIÓN DE WHATSAPP:
                 msg = err_json.get('error', {}).get('message', err_body)
             except Exception:
                 msg = err_body
-            last_error_msg = f"Error {e.code}: {msg}"
+            last_error_msg = f"Error {e.code} con modelo {model}: {msg}"
+            print(f"[Gemini intento {model}]: {last_error_msg}")
             if e.code == 404:
-                # Si el modelo no existe, intenta el siguiente
                 continue
             raise Exception(last_error_msg)
         except Exception as e:
             last_error_msg = str(e)
-            raise Exception(last_error_msg)
+            print(f"[Error genérico {model}]: {last_error_msg}")
+            continue
 
     if last_error_msg:
         raise Exception(last_error_msg)
