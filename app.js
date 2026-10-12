@@ -302,6 +302,7 @@ function renderDashboard() {
     if (target === myId) return true;
     if (target === 'all' || target === 'team') return true; // Everyone sees general team milestones!
     if (currentMember.category === 'crew' && target === 'crew') return true;
+    if (myId === 'edgar' && (target === 'mash' || target === 'mäsh')) return true;
     return false;
   });
 
@@ -484,6 +485,7 @@ function getAssigneeName(assigneeId) {
   if (!assigneeId || assigneeId.toLowerCase() === 'all') return "Todas (Banda)";
   if (assigneeId.toLowerCase() === 'crew') return "Crew & Management";
   if (assigneeId.toLowerCase() === 'team') return "Todo el Equipo";
+  if (assigneeId.toLowerCase() === 'mash' || assigneeId.toLowerCase() === 'mäsh') return "Edgar / Mäsh";
   const member = portalData.members.find(m => m.id.toLowerCase() === assigneeId.toLowerCase());
   return member ? member.name.split('/')[0].trim() : assigneeId;
 }

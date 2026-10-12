@@ -38,13 +38,13 @@
     },
     {
       "id": "edgar",
-      "name": "Edgar",
-      "fullName": "Edgar",
-      "role": "World Builder",
+      "name": "Edgar (Mäsh)",
+      "fullName": "Edgar Valerio (Mäsh)",
+      "role": "World Builder / Arte & Estilismo",
       "color": "#00F0FF",
       "pin": "2028",
       "avatar": "images/logo.png",
-      "operationalRole": "Construcción de universo narrativo y lore de Black KNVRS, dirección de arte, estética transmedia y branding de la era.",
+      "operationalRole": "Construcción de universo narrativo y lore de Black KNVRS, dirección de arte, estilismo, estética transmedia y branding de la era.",
       "isAdmin": true,
       "category": "crew"
     },
@@ -144,6 +144,13 @@
       "desc": "Lanzamiento de contenido de estudio con correo de contacto institucional."
     },
     {
+      "id": "tl-corte-elec",
+      "type": "video",
+      "date": "2026-10-19",
+      "title": "Junta de Corte: Videoclip \"Electricidad\" con Pavel",
+      "desc": "Revisión con Pavel de opciones de locación, costos aterrizados, vestuario, sistema de lluvia y definición de prioridades de rodaje."
+    },
+    {
       "id": "tl-4",
       "type": "release",
       "date": "2026-10-20",
@@ -168,8 +175,8 @@
       "id": "tl-7",
       "type": "video",
       "date": "2026-11-07",
-      "title": "Rodaje Videoclip 'Electricidad' (Break Room)",
-      "desc": "Grabación en Break Room / Set LED dirigida por Pavel Guerra. Concepto por Edgar."
+      "title": "Rodaje Videoclip \"Electricidad\" (Break Room + Lluvia)",
+      "desc": "Grabación oficial de las secuencias de Break Room y Lluvia con la banda tocando, dirigida por Pavel Guerra (meta antes de finalizar noviembre)."
     },
     {
       "id": "tl-8",
@@ -218,7 +225,12 @@
       "waterfallTrackNumber": null,
       "audioFile": "audio/I LIKE 2 BE.mp3",
       "versions": [
-        { "name": "Video Edit / Social Audio", "file": "audio/I LIKE 2 BE.mp3", "lufs": -14.1, "isPrimary": true }
+        {
+          "name": "Video Edit / Social Audio",
+          "file": "audio/I LIKE 2 BE.mp3",
+          "lufs": -14.1,
+          "isPrimary": true
+        }
       ],
       "assets": {
         "driveUrl": "https://drive.google.com/drive/folders/blackknvrs-ilike2be",
@@ -239,7 +251,12 @@
       "waterfallTrackNumber": 1,
       "audioFile": "audio/CFE.mp3",
       "versions": [
-        { "name": "Mix Final v2", "file": "audio/CFE.mp3", "lufs": -14.3, "isPrimary": true }
+        {
+          "name": "Mix Final v2",
+          "file": "audio/CFE.mp3",
+          "lufs": -14.3,
+          "isPrimary": true
+        }
       ],
       "assets": {
         "driveUrl": "https://drive.google.com/drive/folders/blackknvrs-electricidad",
@@ -259,7 +276,12 @@
       "waterfallTrackNumber": 2,
       "audioFile": "audio/Un Aplauso Para Ti.mp3",
       "versions": [
-        { "name": "Master v1", "file": "audio/Un Aplauso Para Ti.mp3", "lufs": -14.0, "isPrimary": true }
+        {
+          "name": "Master v1",
+          "file": "audio/Un Aplauso Para Ti.mp3",
+          "lufs": -14.0,
+          "isPrimary": true
+        }
       ],
       "assets": {
         "driveUrl": "https://drive.google.com/drive/folders/blackknvrs-unaplausoparati",
@@ -279,7 +301,12 @@
       "waterfallTrackNumber": 3,
       "audioFile": "audio/Si Fuera Yo.mp3",
       "versions": [
-        { "name": "Master v1", "file": "audio/Si Fuera Yo.mp3", "lufs": -13.8, "isPrimary": true }
+        {
+          "name": "Master v1",
+          "file": "audio/Si Fuera Yo.mp3",
+          "lufs": -13.8,
+          "isPrimary": true
+        }
       ],
       "assets": {
         "driveUrl": "https://drive.google.com/drive/folders/blackknvrs-sifuerayo",
@@ -299,7 +326,12 @@
       "waterfallTrackNumber": null,
       "audioFile": "audio/Cancion de Adri.mp3",
       "versions": [
-        { "name": "Maqueta Estudio Adri", "file": "audio/Cancion de Adri.mp3", "lufs": -15.5, "isPrimary": true }
+        {
+          "name": "Maqueta Estudio Adri",
+          "file": "audio/Cancion de Adri.mp3",
+          "lufs": -15.5,
+          "isPrimary": true
+        }
       ],
       "assets": {
         "driveUrl": "https://drive.google.com/drive/folders/blackknvrs-demos",
@@ -319,7 +351,12 @@
       "waterfallTrackNumber": null,
       "audioFile": "audio/Aunque todo este mal.m4a",
       "versions": [
-        { "name": "Maqueta M4A Directa", "file": "audio/Aunque todo este mal.m4a", "lufs": -16.0, "isPrimary": true }
+        {
+          "name": "Maqueta M4A Directa",
+          "file": "audio/Aunque todo este mal.m4a",
+          "lufs": -16.0,
+          "isPrimary": true
+        }
       ],
       "assets": {
         "driveUrl": "https://drive.google.com/drive/folders/blackknvrs-demos",
@@ -339,7 +376,12 @@
       "waterfallTrackNumber": null,
       "audioFile": "audio/Cancion de Kar.mp3",
       "versions": [
-        { "name": "Maqueta Estudio Kar", "file": "audio/Cancion de Kar.mp3", "lufs": -15.0, "isPrimary": true }
+        {
+          "name": "Maqueta Estudio Kar",
+          "file": "audio/Cancion de Kar.mp3",
+          "lufs": -15.0,
+          "isPrimary": true
+        }
       ],
       "assets": {
         "driveUrl": "https://drive.google.com/drive/folders/blackknvrs-demos",
@@ -352,59 +394,136 @@
   ],
   "tasks": [
     {
-      "id": "t17",
-      "title": "Aprenderse todos los solos de VanHalen",
-      "description": "Práctica intensiva de solos y técnica para el setlist en vivo.",
-      "assignedTo": "kar",
-      "dueDate": "2026-10-02",
-      "priority": "Alta",
+      "id": "t_elec_luis_01",
+      "title": "Producción ejecutiva y cotizaciones locación videoclip \"Electricidad\"",
+      "description": "Buscar y cotizar break rooms y foros en CDMX; revisar permisos y la posibilidad de grabar ambas secuencias (break room y lluvia) en una sola locación. Armar el presupuesto preliminar, buscar patrocinios, proponer fechas de rodaje (meta antes de fin de noviembre), coordinar juntas pendientes y preparar la minuta con tareas para todos.",
+      "assignedTo": "luis",
+      "dueDate": "2026-10-19",
+      "priority": "Crítica",
+      "category": "Videoclip",
       "status": "Pendiente",
-      "category": "Show",
-      "assignedBy": "Luis Miguel"
+      "assignedBy": "Junta 10 Octubre",
+      "createdAt": "2026-10-12T19:00:00.000Z"
     },
     {
-      "id": "t18",
-      "title": "Conseguir un millón de dólares",
-      "description": "Financiamiento y patrocinios para la producción de la era.",
-      "assignedTo": "maff",
+      "id": "t_elec_mash_adn",
+      "title": "Documento ADN Black KNVRS y definición de conceptos para Break Room",
+      "description": "Compartir y revisar el documento de ADN de Black KNVRS con la banda para dar una base común. Trabajar con Maff y las integrantes en definir hasta 3 ideas de las que quieran liberarse o \"destruir\", eligiendo objetos simbólicos que las representen en cámara para comunicar la identidad del grupo y no sólo verse espectacular.",
+      "assignedTo": "edgar",
       "dueDate": "2026-10-16",
       "priority": "Alta",
+      "category": "Videoclip",
       "status": "Pendiente",
-      "category": "Visual",
-      "assignedBy": "Luis Miguel"
+      "assignedBy": "Junta 10 Octubre",
+      "createdAt": "2026-10-12T19:00:00.000Z"
     },
     {
-      "id": "t19",
-      "title": "Bailar la macarena",
-      "description": "Contenido dinámico para campaña de redes sociales y TikTok.",
-      "assignedTo": "pia",
-      "dueDate": "2026-10-03",
+      "id": "t_elec_maff_grupo",
+      "title": "Socialización con la banda: Objetos para romper e imagen en video",
+      "description": "Contarles a las demás integrantes lo acordado en la junta y recopilar sus ideas sobre los objetos para romper y cómo quieren verse en el video, partiendo del documento de ADN que enviará Mäsh.",
+      "assignedTo": "maff",
+      "dueDate": "2026-10-18",
       "priority": "Alta",
+      "category": "Videoclip",
       "status": "Pendiente",
-      "category": "Redes",
-      "assignedBy": "Luis Miguel"
+      "assignedBy": "Junta 10 Octubre",
+      "createdAt": "2026-10-12T19:00:00.000Z"
+    },
+    {
+      "id": "t_elec_mash_vestuario",
+      "title": "Diseño y cotización de vestuario (Lluvia + Protección Break Room)",
+      "description": "Trabajar con las integrantes y una amiga en dos looks: uno para tocar bajo la lluvia y otro para romper objetos con protección. Revisar qué prendas ya tienen, qué falta conseguir, cotizarlo y, una vez definido el equipo de seguridad, ver cómo personalizarlo para la estética de la banda.",
+      "assignedTo": "edgar",
+      "dueDate": "2026-10-19",
+      "priority": "Alta",
+      "category": "Visual",
+      "status": "Pendiente",
+      "assignedBy": "Junta 10 Octubre",
+      "createdAt": "2026-10-12T19:00:00.000Z"
+    },
+    {
+      "id": "t_elec_pavel_lluvia",
+      "title": "Sistema técnico de lluvia y protección impermeable de cámaras",
+      "description": "Resolver el sistema de lluvia en set y todos los detalles técnicos de rodaje y protección para cámaras y ópticas según las locaciones y utilería elegidas.",
+      "assignedTo": "pavel",
+      "dueDate": "2026-10-19",
+      "priority": "Alta",
+      "category": "Videoclip",
+      "status": "Pendiente",
+      "assignedBy": "Junta 10 Octubre",
+      "createdAt": "2026-10-12T19:00:00.000Z"
+    },
+    {
+      "id": "t_elec_all_utileria",
+      "title": "Utilería para lluvia (instrumentos secundarios) y lista de objetos a romper",
+      "description": "Identificar opciones de batería, guitarras, bajo y micrófonos que puedan mojarse sin riesgo para el equipo titular; hacer la lista de objetos para romper priorizando alternativas seguras y asequibles.",
+      "assignedTo": "all",
+      "dueDate": "2026-10-18",
+      "priority": "Alta",
+      "category": "Producción",
+      "status": "Pendiente",
+      "assignedBy": "Junta 10 Octubre",
+      "createdAt": "2026-10-12T19:00:00.000Z"
+    },
+    {
+      "id": "t_elec_team_corte",
+      "title": "Junta de corte con Pavel: Opciones, costos y definición de rodaje",
+      "description": "Reunión de corte (19 o 20 de octubre) para revisar opciones y costos más aterrizados de foros/break room, vestuario, viabilidad del sistema de lluvia de Pavel y definir si el presupuesto alcanza para las dos secuencias o priorizar una con las chicas (meta: rodar antes de terminar noviembre).",
+      "assignedTo": "team",
+      "dueDate": "2026-10-19",
+      "priority": "Crítica",
+      "category": "Videoclip",
+      "status": "Pendiente",
+      "assignedBy": "Junta 10 Octubre",
+      "createdAt": "2026-10-12T19:00:00.000Z"
+    },
+    {
+      "id": "t_1791238773354",
+      "title": "Intentar pensar en un Intro para el show (Jam de 1 minutos)",
+      "description": "",
+      "assignedTo": "all",
+      "dueDate": "2026-10-06",
+      "priority": "Alta",
+      "category": "Show",
+      "status": "Pendiente",
+      "assignedBy": "Luis Miguel",
+      "createdAt": "2026-10-05T22:19:33.354Z"
+    },
+    {
+      "id": "t_1791238712116",
+      "title": "Llevar ideas para el break de I LIKE 2 Be.",
+      "description": "",
+      "assignedTo": "pia",
+      "dueDate": "2026-10-06",
+      "priority": "Alta",
+      "category": "Show",
+      "status": "Pendiente",
+      "assignedBy": "Luis Miguel",
+      "createdAt": "2026-10-05T22:18:32.116Z"
+    },
+    {
+      "id": "t_1791238683178",
+      "title": "Llevar 3 referencias de coreo para las canciones.",
+      "description": "",
+      "assignedTo": "all",
+      "dueDate": "2026-10-06",
+      "priority": "Alta",
+      "category": "Show",
+      "status": "Pendiente",
+      "assignedBy": "Luis Miguel",
+      "createdAt": "2026-10-05T22:18:03.178Z"
     },
     {
       "id": "t1",
       "title": "Sesión de fotos oficial del grupo (Pavel Guerra)",
       "description": "Coordinación de llamado en estudio con Pavel Guerra para fotos oficiales de prensa y portadas.",
       "assignedTo": "all",
-      "dueDate": "2026-10-01",
+      "dueDate": "2026-10-23",
       "priority": "Crítica",
-      "status": "Completada",
-      "category": "Visual",
-      "assignedBy": "Luis Miguel"
-    },
-    {
-      "id": "t2",
-      "title": "Publicación de foto grupal e inicio de posts colaborativos",
-      "description": "Publicar en IG la foto oficial de alineación y activar posts individuales colaborativos cada 2 días.",
-      "assignedTo": "all",
-      "dueDate": "2026-10-02",
-      "priority": "Alta",
       "status": "Pendiente",
-      "category": "Redes",
-      "assignedBy": "Luis Miguel"
+      "category": "Visual",
+      "assignedBy": "Luis Miguel",
+      "completedAt": null
     },
     {
       "id": "t3",
@@ -632,10 +751,22 @@
     "durationMonths": 6,
     "kpiGoals": "Alcanzar 1,000 oyentes mensuales y realizar 1 show exclusivo con 40 boletos de pago",
     "punctualityRule": "Retardos no justificados mayores a 5 minutos = $50 MXN a 'La Caja'",
-    "masterShare": { "producers": 50, "artists": 50 },
-    "youtubeRoyalties": { "producers": 50, "artists": 50 },
-    "compositionShare": { "authors": 100, "description": "100% Autoras (INDAUTOR / SACM) con Split Sheet firmado desde inicio de sesión" },
-    "syncShare": { "producers": 50, "artists": 50 },
+    "masterShare": {
+      "producers": 50,
+      "artists": 50
+    },
+    "youtubeRoyalties": {
+      "producers": 50,
+      "artists": 50
+    },
+    "compositionShare": {
+      "authors": 100,
+      "description": "100% Autoras (INDAUTOR / SACM) con Split Sheet firmado desde inicio de sesión"
+    },
+    "syncShare": {
+      "producers": 50,
+      "artists": 50
+    },
     "liveBookingFee": "20% Comisión sobre utilidad neta de shows gestionados por Productores (80% Artistas)",
     "socialMediaGuidelines": "Cuentas personalizadas, opción sufijo _black, alineación con patrocinios",
     "brandProtection": "Black KNVRS validado fonéticamente"
