@@ -1888,3 +1888,86 @@ body {
   font-size: 0.62rem;
   font-weight: 600;
 }
+
+/* -------------------------------------------------------------
+ * WHATSAPP AI ASSISTANT STYLES
+ * ------------------------------------------------------------- */
+.wa-prop-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem;
+  display: flex;
+  gap: 0.8rem;
+  align-items: flex-start;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.wa-prop-card.is-selected {
+  border-color: rgba(0, 230, 118, 0.4);
+  background: rgba(0, 230, 118, 0.04);
+}
+
+.wa-prop-checkbox {
+  margin-top: 0.25rem;
+  width: 18px;
+  height: 18px;
+  accent-color: #00e676;
+  cursor: pointer;
+}
+
+.wa-prop-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.wa-prop-title-input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.35rem 0.6rem;
+}
+
+.wa-prop-desc-input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  padding: 0.35rem 0.6rem;
+  resize: vertical;
+}
+
+.wa-prop-meta-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.wa-prop-select, .wa-prop-date {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--chrome-highlight);
+  font-size: 0.72rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.wa-prop-quote {
+  font-size: 0.68rem;
+  color: #00e676;
+  background: rgba(0, 230, 118, 0.08);
+  border-left: 2px solid #00e676;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin-top: 0.2rem;
+  font-style: italic;
+}

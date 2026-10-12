@@ -27,6 +27,7 @@ async function initApp() {
   setupAudioPlayer();
   setupVideoPlayer();
   setupFirebaseSync();
+  setupWhatsAppAssistant();
   startCountdown();
 
   // Auto-login if previously active in this browser session
@@ -575,6 +576,16 @@ function setupTaskManagement() {
 }
 
 function renderTasksManagement() {
+  const waBtn = document.getElementById('openWaAssistantBtn');
+  if (waBtn) {
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    if (currentMember && currentMember.id === 'luis' && isLocal) {
+      waBtn.classList.remove('hidden');
+    } else {
+      waBtn.classList.add('hidden');
+    }
+  }
+
   const listEl = document.getElementById('tasksGlobalList');
   if (!listEl) return;
   listEl.innerHTML = '';
@@ -1388,6 +1399,319 @@ function escapeHTML(str) {
     .replace(/'/g, '&#039;');
 }
 
+// -------------------------------------------------------------
+// 10. WHATSAPP AI ASSISTANT BRIDGE (LOCAL SUITE FOR LUIS)
+// -------------------------------------------------------------
+let proposedWaTasks = [];
+
+function setupWhatsAppAssistant() {
+  const openBtn = document.getElementById('openWaAssistantBtn');
+  const closeBtn = document.getElementById('closeWaAssistantBtn');
+  const card = document.getElementById('waAssistantCard');
+  const scanBtn = document.getElementById('btnScanWhatsApp');
+  const startInput = document.getElementById('waStartDate');
+  const endInput = document.getElementById('waEndDate');
+  const statusBadge = document.getElementById('waStatusBadge');
+  const apiKeyRow = document.getElementById('waApiKeyRow');
+  const apiKeyInput = document.getElementById('waCustomApiKey');
+  const saveKeyBtn = document.getElementById('btnSaveWaApiKey');
+  const loader = document.getElementById('waLoadingIndicator');
+  const resultsContainer = document.getElementById('waResultsContainer');
+  const proposedList = document.getElementById('waProposedTasksList');
+  const foundCount = document.getElementById('waFoundCount');
+  const selectedCount = document.getElementById('waSelectedCount');
+  const selectAllBtn = document.getElementById('btnSelectAllWa');
+  const deselectAllBtn = document.getElementById('btnDeselectAllWa');
+  const cancelBtn = document.getElementById('btnCancelWaTasks');
+  const publishBtn = document.getElementById('btnPublishWaTasks');
+
+  if (!card) return;
+
+  // Initialize date defaults (from 2 days ago to today)
+  const today = new Date();
+  const twoDaysAgo = new Date(today);
+  twoDaysAgo.setDate(today.getDate() - 2);
+
+  const formatDate = d => d.toISOString().split('T')[0];
+  if (startInput && !startInput.value) startInput.value = formatDate(twoDaysAgo);
+  if (endInput && !endInput.value) endInput.value = formatDate(today);
+
+  // Load saved custom API key from localStorage if present
+  const savedKey = localStorage.getItem('bk_gemini_key') || '';
+  if (apiKeyInput && savedKey) {
+    apiKeyInput.value = savedKey;
+  }
+
+  if (saveKeyBtn) {
+    saveKeyBtn.addEventListener('click', () => {
+      const val = (apiKeyInput.value || '').trim();
+      if (val) {
+        localStorage.setItem('bk_gemini_key', val);
+        alert('API Key de Gemini guardada localmente.');
+        if (apiKeyRow) apiKeyRow.classList.add('hidden');
+      }
+    });
+  }
+
+  // Toggle Assistant Card
+  if (openBtn) {
+    openBtn.addEventListener('click', () => {
+      card.classList.remove('hidden');
+      card.scrollIntoView({ behavior: 'smooth' });
+      checkBridgeStatus();
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      card.classList.add('hidden');
+    });
+  }
+
+  async function checkBridgeStatus() {
+    if (!statusBadge) return;
+    try {
+      const res = await fetch('http://127.0.0.1:5005/api/status', { mode: 'cors' });
+      if (res.ok) {
+        const data = await res.json();
+        statusBadge.textContent = "● Puente Activo (127.0.0.1:5005)";
+        statusBadge.style.color = "#00e676";
+        statusBadge.style.background = "rgba(0, 230, 118, 0.12)";
+        if (!data.hasApiKey && !localStorage.getItem('bk_gemini_key')) {
+          apiKeyRow.classList.remove('hidden');
+        } else {
+          apiKeyRow.classList.add('hidden');
+        }
+      } else {
+        throw new Error('offline');
+      }
+    } catch (e) {
+      statusBadge.textContent = "● Puente Inactivo (corre: python wa_assistant.py)";
+      statusBadge.style.color = "#ffb300";
+      statusBadge.style.background = "rgba(255, 179, 0, 0.15)";
+      apiKeyRow.classList.remove('hidden');
+    }
+  }
+
+  // Scan WhatsApp
+  if (scanBtn) {
+    scanBtn.addEventListener('click', async () => {
+      const sDate = startInput.value;
+      const eDate = endInput.value;
+      if (!sDate || !eDate) {
+        alert("Por favor selecciona las fechas de inicio y fin.");
+        return;
+      }
+
+      loader.classList.remove('hidden');
+      resultsContainer.classList.add('hidden');
+      proposedList.innerHTML = '';
+
+      const customKey = (apiKeyInput ? apiKeyInput.value.trim() : '') || localStorage.getItem('bk_gemini_key') || '';
+
+      try {
+        const res = await fetch('http://127.0.0.1:5005/api/extract-tasks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            startDate: sDate,
+            endDate: eDate,
+            apiKey: customKey
+          })
+        });
+
+        const data = await res.json();
+        loader.classList.add('hidden');
+
+        if (!res.ok || data.error) {
+          if (data.error && data.error.includes('Gemini API Key')) {
+            apiKeyRow.classList.remove('hidden');
+          }
+          alert(`Aviso: ${data.error || 'Error al procesar'}`);
+          return;
+        }
+
+        proposedWaTasks = data.tasks || [];
+        renderProposedTasks(proposedWaTasks);
+        resultsContainer.classList.remove('hidden');
+      } catch (err) {
+        loader.classList.add('hidden');
+        alert("No se pudo conectar al puente local (127.0.0.1:5005). Asegúrate de tener corriendo 'python wa_assistant.py' en la terminal.");
+      }
+    });
+  }
+
+  function renderProposedTasks(tasks) {
+    proposedList.innerHTML = '';
+    foundCount.textContent = tasks.length;
+
+    if (tasks.length === 0) {
+      proposedList.innerHTML = `
+        <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:1rem; text-align:center;">
+          <p style="font-size:0.8rem; color:var(--text-muted);">No se detectaron compromisos pendientes en ese rango de fechas.</p>
+        </div>
+      `;
+      updateSelectedCount();
+      return;
+    }
+
+    tasks.forEach((t, index) => {
+      const card = document.createElement('div');
+      card.className = 'wa-prop-card is-selected';
+      card.dataset.index = index;
+
+      card.innerHTML = `
+        <input type="checkbox" class="wa-prop-checkbox" checked data-idx="${index}">
+        <div class="wa-prop-content">
+          <input type="text" class="wa-prop-title-input" value="${escapeHTML(t.title || '')}" placeholder="Título de la tarea">
+          <textarea class="wa-prop-desc-input" rows="2" placeholder="Descripción...">${escapeHTML(t.description || '')}</textarea>
+          
+          <div class="wa-prop-meta-grid">
+            <div>
+              <span style="font-size:0.62rem; color:var(--text-muted); font-weight:700;">RESPONSABLE:</span>
+              <select class="wa-prop-select wa-assignee-select">
+                <option value="all" ${t.assignedTo === 'all' ? 'selected' : ''}>Todas (Banda)</option>
+                <option value="team" ${t.assignedTo === 'team' ? 'selected' : ''}>Todo el Equipo</option>
+                <option value="pia" ${t.assignedTo === 'pia' ? 'selected' : ''}>Pía / Valeria (Voz)</option>
+                <option value="adri" ${t.assignedTo === 'adri' ? 'selected' : ''}>Adri (Bajo)</option>
+                <option value="kar" ${t.assignedTo === 'kar' ? 'selected' : ''}>Kar (Guitarra)</option>
+                <option value="maff" ${t.assignedTo === 'maff' ? 'selected' : ''}>Maff (Batería)</option>
+                <option value="dani" ${t.assignedTo === 'dani' ? 'selected' : ''}>Dani (Guitarra)</option>
+                <option value="pavel" ${t.assignedTo === 'pavel' ? 'selected' : ''}>Pavel Guerra (Video)</option>
+                <option value="edgar" ${t.assignedTo === 'edgar' ? 'selected' : ''}>Edgar / Mäsh (Arte)</option>
+                <option value="steph" ${t.assignedTo === 'steph' ? 'selected' : ''}>Steph (Logística)</option>
+                <option value="luis" ${t.assignedTo === 'luis' ? 'selected' : ''}>Luis Miguel (Manager)</option>
+              </select>
+            </div>
+
+            <div>
+              <span style="font-size:0.62rem; color:var(--text-muted); font-weight:700;">FECHA LÍMITE:</span>
+              <input type="date" class="wa-prop-date wa-due-date" value="${t.dueDate || ''}">
+            </div>
+
+            <div>
+              <span style="font-size:0.62rem; color:var(--text-muted); font-weight:700;">PRIORIDAD:</span>
+              <select class="wa-prop-select wa-priority-select">
+                <option value="Crítica" ${t.priority === 'Crítica' ? 'selected' : ''}>Crítica</option>
+                <option value="Alta" ${t.priority === 'Alta' ? 'selected' : ''}>Alta</option>
+                <option value="Media" ${(!t.priority || t.priority === 'Media') ? 'selected' : ''}>Media</option>
+                <option value="Baja" ${t.priority === 'Baja' ? 'selected' : ''}>Baja</option>
+              </select>
+            </div>
+
+            <div>
+              <span style="font-size:0.62rem; color:var(--text-muted); font-weight:700;">CATEGORÍA:</span>
+              <select class="wa-prop-select wa-category-select">
+                <option value="Videoclip" ${t.category === 'Videoclip' ? 'selected' : ''}>Videoclip</option>
+                <option value="Visual" ${t.category === 'Visual' ? 'selected' : ''}>Visual</option>
+                <option value="Producción" ${t.category === 'Producción' ? 'selected' : ''}>Producción</option>
+                <option value="Show" ${t.category === 'Show' ? 'selected' : ''}>Show</option>
+                <option value="Redes" ${t.category === 'Redes' ? 'selected' : ''}>Redes</option>
+                <option value="Legal" ${t.category === 'Legal' ? 'selected' : ''}>Legal</option>
+                <option value="Composición" ${t.category === 'Composición' ? 'selected' : ''}>Composición</option>
+                <option value="Lore" ${t.category === 'Lore' ? 'selected' : ''}>Lore</option>
+              </select>
+            </div>
+          </div>
+
+          ${t.quote ? `<div class="wa-prop-quote">💬 "${escapeHTML(t.quote)}"</div>` : ''}
+        </div>
+      `;
+
+      const chk = card.querySelector('.wa-prop-checkbox');
+      chk.addEventListener('change', () => {
+        card.classList.toggle('is-selected', chk.checked);
+        updateSelectedCount();
+      });
+
+      proposedList.appendChild(card);
+    });
+
+    updateSelectedCount();
+  }
+
+  function updateSelectedCount() {
+    const checked = proposedList.querySelectorAll('.wa-prop-checkbox:checked');
+    if (selectedCount) selectedCount.textContent = checked.length;
+  }
+
+  if (selectAllBtn) {
+    selectAllBtn.addEventListener('click', () => {
+      proposedList.querySelectorAll('.wa-prop-card').forEach(c => {
+        c.classList.add('is-selected');
+        c.querySelector('.wa-prop-checkbox').checked = true;
+      });
+      updateSelectedCount();
+    });
+  }
+
+  if (deselectAllBtn) {
+    deselectAllBtn.addEventListener('click', () => {
+      proposedList.querySelectorAll('.wa-prop-card').forEach(c => {
+        c.classList.remove('is-selected');
+        c.querySelector('.wa-prop-checkbox').checked = false;
+      });
+      updateSelectedCount();
+    });
+  }
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      resultsContainer.classList.add('hidden');
+    });
+  }
+
+  // Publish Selected Tasks to Central Firestore Server
+  if (publishBtn) {
+    publishBtn.addEventListener('click', () => {
+      const cards = proposedList.querySelectorAll('.wa-prop-card');
+      const toPublish = [];
+
+      cards.forEach((card, i) => {
+        const isChecked = card.querySelector('.wa-prop-checkbox').checked;
+        if (!isChecked) return;
+
+        const title = card.querySelector('.wa-prop-title-input').value.trim();
+        const desc = card.querySelector('.wa-prop-desc-input').value.trim();
+        const assignee = card.querySelector('.wa-assignee-select').value;
+        const due = card.querySelector('.wa-due-date').value;
+        const priority = card.querySelector('.wa-priority-select').value;
+        const category = card.querySelector('.wa-category-select').value;
+
+        if (!title) return;
+
+        toPublish.push({
+          id: `t_wa_${Date.now()}_${i}`,
+          title: title,
+          description: desc,
+          assignedTo: assignee,
+          dueDate: due || new Date().toISOString().split('T')[0],
+          priority: priority,
+          category: category,
+          status: 'Pendiente',
+          assignedBy: 'WhatsApp IA (Luis Miguel)',
+          createdAt: new Date().toISOString()
+        });
+      });
+
+      if (toPublish.length === 0) {
+        alert("No hay tareas seleccionadas para publicar.");
+        return;
+      }
+
+      // Prepend to active tasks
+      portalData.tasks = [...toPublish, ...portalData.tasks];
+      saveData();
+
+      card.classList.add('hidden');
+      renderDashboard();
+      renderTasksManagement();
+
+      alert(`⚡ ¡Éxito! Se publicaron ${toPublish.length} tareas al servidor en tiempo real. Todo el equipo las puede ver ahora en su portal.`);
+    });
+  }
+}
+
 // Service Worker Registration
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -1396,3 +1720,4 @@ if ('serviceWorker' in navigator) {
 }
 
 document.addEventListener('DOMContentLoaded', initApp);
+

@@ -177,7 +177,81 @@
               <h4 class="chrome-text">GESTIÓN DE TAREAS</h4>
               <span class="subtitle">Asignación, edición de fechas y responsabilidades</span>
             </div>
-            <button class="btn-action-primary" id="openNewTaskBtn">+ Asignar Tarea</button>
+            <div style="display:flex; gap:0.6rem; align-items:center;">
+              <button class="btn-action-secondary hidden" id="openWaAssistantBtn" style="border-color:#00e676; color:#00e676; background:rgba(0,230,118,0.08);" title="Analizar acuerdos de WhatsApp con IA">⚡ WhatsApp IA</button>
+              <button class="btn-action-primary" id="openNewTaskBtn">+ Asignar Tarea</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- WhatsApp AI Assistant Card (Local only for Luis Miguel) -->
+        <div class="admin-task-card chrome-panel hidden" id="waAssistantCard" style="border:1px solid rgba(0,230,118,0.3); background:rgba(6,10,12,0.95);">
+          <div class="atc-header">
+            <div style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+              <span class="atc-tag" style="background:rgba(0, 230, 118, 0.15); color:#00e676; border:1px solid rgba(0, 230, 118, 0.3);">⚡ WHATSAPP // ASISTENTE IA DE ACUERDOS</span>
+              <span id="waStatusBadge" class="status-pill" style="font-size:0.65rem; background:rgba(255,179,0,0.12); color:#ffb300;">Comprobando puente...</span>
+            </div>
+            <button class="atc-close" id="closeWaAssistantBtn">✕</button>
+          </div>
+          
+          <p style="font-size:0.75rem; color:var(--text-muted); margin:0.2rem 0 0.8rem 0; line-height:1.4;">
+            Analiza los mensajes de la banda en el grupo <strong>BLACK KNVRS ⭑</strong> dentro del rango de fechas que definas, genera borradores de tareas para revisión y publícalas en tiempo real para todos.
+          </p>
+
+          <div class="wa-filter-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) auto; gap:0.8rem; align-items:flex-end;">
+            <div class="form-row" style="margin:0;">
+              <label for="waStartDate" style="font-size:0.68rem; color:var(--text-muted); font-weight:700;">DESDE (FECHA INICIO):</label>
+              <input type="date" id="waStartDate" class="form-input" style="padding:0.5rem 0.6rem; font-size:0.8rem;">
+            </div>
+            <div class="form-row" style="margin:0;">
+              <label for="waEndDate" style="font-size:0.68rem; color:var(--text-muted); font-weight:700;">HASTA (FECHA FIN):</label>
+              <input type="date" id="waEndDate" class="form-input" style="padding:0.5rem 0.6rem; font-size:0.8rem;">
+            </div>
+            <div>
+              <button class="btn-submit-task" id="btnScanWhatsApp" style="padding:0.55rem 1.1rem; white-space:nowrap; margin:0; background:linear-gradient(135deg, #00e676, #00b0ff); color:#000; font-weight:800; border:none;">
+                🔍 Analizar Acuerdos
+              </button>
+            </div>
+          </div>
+
+          <!-- Optional API Key accordion if not in .env -->
+          <div id="waApiKeyRow" class="hidden" style="margin-top:0.8rem; padding:0.6rem 0.8rem; background:rgba(255,255,255,0.02); border:1px dashed var(--border-color); border-radius:var(--radius-sm);">
+            <label for="waCustomApiKey" style="font-size:0.68rem; color:#ffb300; font-weight:700;">🔑 GEMINI API KEY (GRATUITA EN AISTUDIO.GOOGLE.COM):</label>
+            <div style="display:flex; gap:0.5rem; margin-top:0.3rem;">
+              <input type="password" id="waCustomApiKey" class="form-input" placeholder="Pega tu API Key AIzaSy..." style="font-size:0.75rem; flex:1;">
+              <button id="btnSaveWaApiKey" class="btn-inline-save" style="white-space:nowrap; padding:0.4rem 0.8rem;">Guardar Key</button>
+            </div>
+            <span style="font-size:0.62rem; color:var(--text-muted);">Solo se almacena localmente en tu navegador.</span>
+          </div>
+
+          <!-- Loading State -->
+          <div id="waLoadingIndicator" class="hidden" style="text-align:center; padding:1.5rem; color:var(--chrome-highlight);">
+            <div class="spinner" style="margin:0 auto 0.5rem auto; width:28px; height:28px; border:2px solid rgba(0,230,118,0.2); border-top-color:#00e676; border-radius:50%; animation:spin 0.8s linear infinite;"></div>
+            <p style="font-size:0.8rem; color:#00e676;" id="waLoadingText">Leyendo mensajes de WhatsApp y analizando compromisos con IA...</p>
+          </div>
+
+          <!-- Results Section -->
+          <div id="waResultsContainer" class="hidden" style="margin-top:1.2rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem; border-bottom:1px solid var(--border-color); padding-bottom:0.5rem; flex-wrap:wrap; gap:0.5rem;">
+              <h5 style="font-size:0.8rem; letter-spacing:1px; color:#fff; text-transform:uppercase; margin:0;">
+                📋 Propuesta de Tareas Detectadas (<span id="waFoundCount" style="color:#00e676;">0</span>)
+              </h5>
+              <div style="display:flex; gap:0.5rem;">
+                <button id="btnSelectAllWa" class="btn-task-action" style="font-size:0.7rem;">Seleccionar Todas</button>
+                <button id="btnDeselectAllWa" class="btn-task-action" style="font-size:0.7rem;">Desmarcar</button>
+              </div>
+            </div>
+
+            <!-- Suggested task cards list -->
+            <div id="waProposedTasksList" style="display:flex; flex-direction:column; gap:0.8rem; max-height:480px; overflow-y:auto; padding-right:0.3rem;"></div>
+
+            <!-- Final confirmation bar -->
+            <div style="margin-top:1.2rem; display:flex; justify-content:flex-end; gap:0.8rem; align-items:center; border-top:1px solid var(--border-color); padding-top:0.8rem;">
+              <button id="btnCancelWaTasks" class="btn-task-action">Descartar</button>
+              <button id="btnPublishWaTasks" class="btn-submit-task" style="background:#00e676; color:#000; font-weight:800; border:none; padding:0.6rem 1.4rem;">
+                ⚡ Publicar para Todos en Servidor (<span id="waSelectedCount">0</span>)
+              </button>
+            </div>
           </div>
         </div>
 
