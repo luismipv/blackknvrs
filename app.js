@@ -8,16 +8,29 @@ let currentTrackIndex = 0;
 let isPlaying = false;
 let currentTaskFilter = 'all';
 
-const STORAGE_KEY = 'bk_portal_data_v2';
+const STORAGE_KEY = 'bk_portal_data_v6';
 const ACTIVE_MEMBER_KEY = 'bk_active_member_id';
 const FIREBASE_CONFIG_KEY = 'bk_firebase_config';
 const DEFAULT_FIREBASE_PROJECT_ID = 'black-knvrs';
+const APP_VERSION = '20261030_v25';
 let lastRemoteSyncTime = null;
 
 // -------------------------------------------------------------
 // 1. INITIALIZATION & DATA PERSISTENCE
 // -------------------------------------------------------------
 async function initApp() {
+  // Purge legacy storage caches from previous versions
+  if (localStorage.getItem('bk_version') !== APP_VERSION) {
+    try {
+      localStorage.removeItem('bk_portal_data_v2');
+      localStorage.removeItem('bk_portal_data_v3');
+      localStorage.removeItem('bk_portal_data_v4');
+      localStorage.removeItem('bk_portal_data_v5');
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.setItem('bk_version', APP_VERSION);
+    } catch (e) {}
+  }
+
   await loadPortalData();
   setupAuthUI();
   setupNavigation();
@@ -43,7 +56,7 @@ async function initApp() {
 
 async function loadPortalData() {
   try {
-    const res = await fetch('data/portal-data.json');
+    const res = await fetch('data/portal-data.json?t=' + Date.now());
     if (res.ok) {
       const defaultData = await res.json();
       
@@ -302,10 +315,15 @@ function renderDashboard() {
   const relevantTasks = portalData.tasks.filter(t => {
     if (currentMember.id === 'luis') return true; // Luis Miguel sees all
     const target = (t.assignedTo || '').toLowerCase();
-    const myId = currentMember.id.toLowerCase();
+    const myId = (currentMember.id || '').toLowerCase();
     
+    // Strict isolation for band members: ONLY their direct tasks!
+    if (currentMember.category === 'band') {
+      return target === myId;
+    }
+
     if (target === myId) return true;
-    if (target === 'all' || target === 'team') return true; // Everyone sees general team milestones!
+    if (target === 'all' || target === 'team') return true;
     if (currentMember.category === 'crew' && target === 'crew') return true;
     if (myId === 'edgar' && (target === 'mash' || target === 'mäsh')) return true;
     return false;
@@ -640,10 +658,14 @@ function renderTasksManagement() {
       filtered = portalData.tasks;
     }
   } else {
-    // Band member / other member ONLY sees their own tasks + group tasks
+    // Band member / other member ONLY sees their own tasks
     const myId = (currentMember && currentMember.id ? currentMember.id : '').toLowerCase();
     filtered = portalData.tasks.filter(t => {
       const target = (t.assignedTo || '').toLowerCase();
+      // Strict isolation for band members: ONLY their direct tasks!
+      if (currentMember && currentMember.category === 'band') {
+        return target === myId;
+      }
       if (target === myId) return true;
       if (target === 'all' || target === 'team') return true;
       if (currentMember && currentMember.category === 'crew' && target === 'crew') return true;
@@ -1815,10 +1837,16 @@ function setupWhatsAppAssistant() {
   }
 }
 
-// Service Worker Registration
+// Service Worker Registration with Immediate Update Check
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(err => console.log('SW notice:', err));
+    navigator.serviceWorker.register('sw.js?v=20261030_v25').then(reg => {
+      reg.update();
+    }).catch(err => console.log('SW notice:', err));
+  });
+
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    window.location.reload();
   });
 }
 

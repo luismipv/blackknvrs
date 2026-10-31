@@ -586,53 +586,6 @@
       "createdAt": "2026-10-12T19:00:00.000Z"
     },
     {
-      "id": "t_elec_all_utileria",
-      "title": "Utilería para lluvia (instrumentos secundarios) y lista de objetos a romper",
-      "description": "Identificar opciones de batería, guitarras, bajo y micrófonos que puedan mojarse sin riesgo para el equipo titular; hacer la lista de objetos para romper priorizando alternativas seguras y asequibles.",
-      "assignedTo": "all",
-      "dueDate": "2026-10-18",
-      "priority": "Alta",
-      "category": "Producción",
-      "status": "Pendiente",
-      "assignedBy": "Junta 10 Octubre",
-      "createdAt": "2026-10-12T19:00:00.000Z"
-    },
-    {
-      "id": "t_elec_team_corte",
-      "title": "Junta de corte con Pavel: Opciones, costos y definición de rodaje",
-      "description": "Reunión de corte (19 o 20 de octubre) para revisar opciones y costos más aterrizados de foros/break room, vestuario, viabilidad del sistema de lluvia de Pavel y definir si el presupuesto alcanza para las dos secuencias o priorizar una con las chicas (meta: rodar antes de terminar noviembre).",
-      "assignedTo": "team",
-      "dueDate": "2026-10-19",
-      "priority": "Crítica",
-      "category": "Videoclip",
-      "status": "Pendiente",
-      "assignedBy": "Junta 10 Octubre",
-      "createdAt": "2026-10-12T19:00:00.000Z"
-    },
-    {
-      "id": "t1",
-      "title": "Sesión de fotos oficial del grupo (Pavel Guerra)",
-      "description": "Coordinación de llamado en estudio con Pavel Guerra para fotos oficiales de prensa y portadas.",
-      "assignedTo": "all",
-      "dueDate": "2026-10-23",
-      "priority": "Crítica",
-      "status": "Pendiente",
-      "category": "Visual",
-      "assignedBy": "Luis Miguel",
-      "completedAt": null
-    },
-    {
-      "id": "t3",
-      "title": "Grabación de 2 videos cortos cantando 'I LIKE 2 BE'",
-      "description": "2 videos verticales estilo TikTok/Reels mostrando la voz de Pía sobre la pista para campaña de expectativa.",
-      "assignedTo": "pia",
-      "dueDate": "2026-10-12",
-      "priority": "Alta",
-      "status": "Pendiente",
-      "category": "Redes",
-      "assignedBy": "Luis Miguel"
-    },
-    {
       "id": "t4",
       "title": "Aprobación de Guión y Tratamiento de 'Electricidad'",
       "description": "Revisar la propuesta estética, paleta de colores y vestuario para el rodaje del set LED.",
@@ -655,17 +608,6 @@
       "assignedBy": "Luis Miguel"
     },
     {
-      "id": "t6",
-      "title": "Supervisión de backline técnico y afinaciones",
-      "description": "Checklist de amplificadores de guitarra, pedaleras, afinadores y cables de repuesto para el show.",
-      "assignedTo": "dani",
-      "dueDate": "2026-10-18",
-      "priority": "Alta",
-      "status": "Pendiente",
-      "category": "Producción",
-      "assignedBy": "Luis Miguel"
-    },
-    {
       "id": "t7",
       "title": "Balance y reporte de aportaciones a 'La Caja'",
       "description": "Corte de caja de impuntualidades de septiembre y compra de baquetas / insumos de ensayo.",
@@ -674,17 +616,6 @@
       "priority": "Baja",
       "status": "En Proceso",
       "category": "Administración",
-      "assignedBy": "Luis Miguel"
-    },
-    {
-      "id": "t8",
-      "title": "CONCIERTO EN VIVO + Estreno oficial de 'I LIKE 2 BE'",
-      "description": "Llegada al foro 16:00 soundcheck. Estreno simultáneo del videoclip en YouTube al iniciar el show.",
-      "assignedTo": "all",
-      "dueDate": "2026-10-23",
-      "priority": "Crítica",
-      "status": "Pendiente",
-      "category": "Show",
       "assignedBy": "Luis Miguel"
     },
     {
