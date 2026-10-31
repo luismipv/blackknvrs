@@ -229,6 +229,10 @@ function setupAuthUI() {
   if (switchBtn) {
     switchBtn.addEventListener('click', () => {
       sessionStorage.removeItem(ACTIVE_MEMBER_KEY);
+      currentTaskFilter = 'all';
+      document.querySelectorAll('#tasksMemberFilters .t-filter-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.member === 'all');
+      });
       document.getElementById('authOverlay').classList.remove('hidden');
       document.getElementById('app').classList.add('hidden');
       enteredPin = "";
@@ -576,29 +580,85 @@ function setupTaskManagement() {
 }
 
 function renderTasksManagement() {
+  const isLuis = currentMember && currentMember.id === 'luis';
+
+  // 1. WhatsApp Assistant Button (Local only for Luis Miguel)
   const waBtn = document.getElementById('openWaAssistantBtn');
   if (waBtn) {
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    if (currentMember && currentMember.id === 'luis' && isLocal) {
+    if (isLuis && isLocal) {
       waBtn.classList.remove('hidden');
     } else {
       waBtn.classList.add('hidden');
     }
   }
 
+  // 2. Hide / Show Admin "+ Asignar Tarea" and Member Filter bar
+  const openNewTaskBtn = document.getElementById('openNewTaskBtn');
+  const formCard = document.getElementById('adminTaskFormCard');
+  const filterBar = document.querySelector('.tasks-filter-bar');
+  const subtitleEl = document.querySelector('#tab-tasks .subtitle');
+
+  if (openNewTaskBtn) {
+    if (isLuis) {
+      openNewTaskBtn.classList.remove('hidden');
+    } else {
+      openNewTaskBtn.classList.add('hidden');
+      if (formCard) formCard.classList.add('hidden');
+    }
+  }
+
+  if (filterBar) {
+    if (isLuis) {
+      filterBar.classList.remove('hidden');
+    } else {
+      filterBar.classList.add('hidden');
+    }
+  }
+
+  if (subtitleEl) {
+    if (isLuis) {
+      subtitleEl.textContent = "Panel de control general // Todas las responsabilidades del equipo";
+    } else {
+      const shortName = currentMember ? currentMember.name.split('/')[0].trim() : 'Banda';
+      subtitleEl.textContent = `Tus responsabilidades asignadas y acuerdos grupales (${shortName})`;
+    }
+  }
+
+  // 3. Render filtered task list based on role
   const listEl = document.getElementById('tasksGlobalList');
   if (!listEl) return;
   listEl.innerHTML = '';
 
-  let filtered = portalData.tasks;
-  if (currentTaskFilter !== 'all') {
-    filtered = portalData.tasks.filter(t => (t.assignedTo || '').toLowerCase() === currentTaskFilter.toLowerCase());
+  let filtered = [];
+
+  if (isLuis) {
+    // Luis Miguel can see all tasks and use filters
+    if (currentTaskFilter !== 'all') {
+      filtered = portalData.tasks.filter(t => (t.assignedTo || '').toLowerCase() === currentTaskFilter.toLowerCase());
+    } else {
+      filtered = portalData.tasks;
+    }
+  } else {
+    // Band member / other member ONLY sees their own tasks + group tasks
+    const myId = (currentMember && currentMember.id ? currentMember.id : '').toLowerCase();
+    filtered = portalData.tasks.filter(t => {
+      const target = (t.assignedTo || '').toLowerCase();
+      if (target === myId) return true;
+      if (target === 'all' || target === 'team') return true;
+      if (currentMember && currentMember.category === 'crew' && target === 'crew') return true;
+      if (myId === 'edgar' && (target === 'mash' || target === 'mäsh')) return true;
+      return false;
+    });
   }
 
   if (filtered.length === 0) {
     listEl.innerHTML = `
       <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:1.2rem; text-align:center;">
-        <p style="font-size:0.8rem; color:var(--text-muted);">No hay tareas asignadas con este filtro.</p>
+        <span style="font-size:1.5rem;">✨</span>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.3rem;">
+          ${isLuis ? 'No hay tareas asignadas con este filtro.' : '¡Todo al día! No tienes tareas pendientes.'}
+        </p>
       </div>
     `;
     return;
